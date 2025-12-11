@@ -627,37 +627,6 @@
       }
     }
 
-    async function switchOrAddBsc() {
-      if (!injectedProvider || !injectedProvider.request) return;
-      try {
-        await injectedProvider.request({
-          method: "wallet_switchEthereumChain",
-          params: [{ chainId: BSC_CHAIN_ID_HEX }]
-        });
-      } catch (switchError) {
-        if (switchError.code === 4902) {
-          await injectedProvider.request({
-            method: "wallet_addEthereumChain",
-            params: [
-              {
-                chainId: BSC_CHAIN_ID_HEX,
-                chainName: "BNB Smart Chain",
-                nativeCurrency: {
-                  name: "BNB",
-                  symbol: "BNB",
-                  decimals: 18
-                },
-                rpcUrls: ["https://bsc-dataseed.binance.org/"],
-                blockExplorerUrls: ["https://bscscan.com"]
-              }
-            ]
-          });
-        } else {
-          throw switchError;
-        }
-      }
-    }
-
     async function connectWallet() {
       injectedProvider = getInjectedProvider();
 
@@ -676,30 +645,6 @@
         const accounts = await injectedProvider.request({
           method: "eth_requestAccounts"
         });
-        let chainId = await injectedProvider.request({
-          method: "eth_chainId"
-        });
-
-        if (chainId !== BSC_CHAIN_ID_HEX) {
-          try {
-            await switchOrAddBsc();
-            chainId = await injectedProvider.request({
-              method: "eth_chainId"
-            });
-          } catch (e) {
-            console.error("Switch network failed", e);
-            setNetworkStatus(false, chainId);
-            setHelper(
-              "You are not on BNB Smart Chain (chain 56). Please switch in your wallet.",
-              true
-            );
-            btnSell.disabled = true;
-            setConnectionStatus(true);
-            userAddress = accounts[0];
-            walletAddressEl.textContent = formatAddress(userAddress);
-            return;
-          }
-        }
 
         provider = new ethers.providers.Web3Provider(injectedProvider);
         signer = provider.getSigner();
@@ -713,10 +658,28 @@
         );
 
         setConnectionStatus(true);
-        setNetworkStatus(true, chainId);
         walletAddressEl.textContent = formatAddress(userAddress);
-        setHelper("Wallet connected. Ready to sell POT.");
 
+        let chainId = null;
+        try {
+          chainId = await injectedProvider.request({ method: "eth_chainId" });
+        } catch (e) {
+          console.warn("Failed to read chainId", e);
+        }
+
+        const onBsc = chainId === BSC_CHAIN_ID_HEX;
+        setNetworkStatus(onBsc, chainId);
+
+        if (!onBsc) {
+          setHelper(
+            "You are not on BNB Smart Chain (chain 56). Please switch network in your wallet.",
+            true
+          );
+          btnSell.disabled = true;
+          return;
+        }
+
+        setHelper("Wallet connected. Ready to sell POT.");
         await refreshBalancesAndPrice();
         btnSell.disabled = false;
       } catch (err) {
@@ -883,19 +846,62 @@
       }
 
       setupProviderEvents();
-
-      injectedProvider
-        .request({ method: "eth_accounts" })
-        .then((accounts) => {
-          if (accounts && accounts.length > 0) {
-            connectWallet();
-          }
-        })
-        .catch(() => {});
-
       setConnectionStatus(false);
       setNetworkStatus(false, null);
       setPriceLoading();
+      setHelper("Connect your wallet to start.");
+
+      injectedProvider
+        .request({ method: "eth_accounts" })
+        .then(async (accounts) => {
+          if (accounts && accounts.length > 0) {
+            try {
+              provider = new ethers.providers.Web3Provider(injectedProvider);
+              signer = provider.getSigner();
+              userAddress = accounts[0];
+              potContract = new ethers.Contract(
+                POT_ADDRESS,
+                POT_ABI,
+                signer
+              );
+              buybackContract = new ethers.Contract(
+                BUYBACK_ADDRESS,
+                BUYBACK_ABI,
+                signer
+              );
+              walletAddressEl.textContent = formatAddress(userAddress);
+              setConnectionStatus(true);
+
+              let chainId = null;
+              try {
+                chainId = await injectedProvider.request({
+                  method: "eth_chainId"
+                });
+              } catch (e) {
+                console.warn("Failed to read chainId (bootstrap)", e);
+              }
+
+              const onBsc = chainId === BSC_CHAIN_ID_HEX;
+              setNetworkStatus(onBsc, chainId);
+
+              if (!onBsc) {
+                setHelper(
+                  "You are not on BNB Smart Chain (chain 56). Please switch network in your wallet.",
+                  true
+                );
+                btnSell.disabled = true;
+                return;
+              }
+
+              setHelper("Wallet connected. Ready to sell POT.");
+              await refreshBalancesAndPrice();
+              btnSell.disabled = false;
+            } catch (e) {
+              console.warn("Silent restore failed:", e);
+            }
+          }
+        })
+        .catch(() => {});
     })();
   </script>
 </body>
