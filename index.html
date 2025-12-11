@@ -381,7 +381,7 @@
 
     .percent-btn:active {
       transform: translateY(0);
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
+      box-shadow: 0 4px 10pxrgba(0, 0, 0, 0.7);
     }
 
     .input-group {
@@ -843,7 +843,6 @@
   </div>
 
   <script>
-    // ------- CONSTANTS -------
     const BSC_CHAIN_ID = 56;
 
     const POT_TOKEN_ADDRESS = "0x66059443da552aAe6a032E3a84307E6BBbd3cd01";
@@ -863,11 +862,12 @@
       "function sellTokens(uint256 amount) external"
     ];
 
-    // ------- STATE -------
     let provider = null;
     let signer = null;
     let userAddress = null;
-    let currentChainId = null;
+
+    let currentChainIdHex = null;
+    let currentChainIdNum = null;
 
     let potContract = null;
     let buybackContract = null;
@@ -875,7 +875,6 @@
     let potBalanceRaw = ethers.BigNumber.from("0");
     let buybackPriceRaw = null;
 
-    // ------- HELPERS -------
     function setError(msg) {
       const el = document.getElementById("error-text");
       if (el) el.textContent = msg || "";
@@ -914,6 +913,38 @@
 
     function clearPercentBtns() {
       document.querySelectorAll(".percent-btn").forEach((b) => b.classList.remove("active"));
+    }
+
+    function setChainIds(chainId) {
+      if (typeof chainId === "number") {
+        currentChainIdNum = chainId;
+        currentChainIdHex = "0x" + chainId.toString(16);
+      } else if (typeof chainId === "string") {
+        currentChainIdHex = chainId;
+        try {
+          const parsed = parseInt(chainId, 16);
+          currentChainIdNum = Number.isFinite(parsed) ? parsed : null;
+        } catch {
+          currentChainIdNum = null;
+        }
+      } else {
+        currentChainIdHex = null;
+        currentChainIdNum = null;
+      }
+    }
+
+    async function refreshChainFromWallet() {
+      if (!window.ethereum) {
+        setChainIds(null);
+        return;
+      }
+      try {
+        const chainId = await window.ethereum.request({ method: "eth_chainId" });
+        setChainIds(chainId);
+      } catch (e) {
+        console.error("eth_chainId error", e);
+        setChainIds(null);
+      }
     }
 
     function updateWalletUi() {
@@ -956,12 +987,12 @@
       let label = "Unknown (–)";
       let isBsc = false;
 
-      if (typeof currentChainId === "number") {
-        if (currentChainId === BSC_CHAIN_ID) {
+      if (typeof currentChainIdNum === "number") {
+        if (currentChainIdNum === BSC_CHAIN_ID) {
           label = "BNB Smart Chain (56)";
           isBsc = true;
         } else {
-          label = "Chain " + String(currentChainId);
+          label = "Chain " + String(currentChainIdNum);
         }
       }
 
@@ -974,7 +1005,7 @@
       if (networkStatusText)
         networkStatusText.textContent = isBsc ? "BNB Smart Chain" : "Wrong / unknown";
 
-      if (!currentChainId) {
+      if (!currentChainIdNum) {
         setError("Cannot detect network. Make sure your wallet is unlocked.");
       } else if (!isBsc) {
         setError("Please switch your wallet to BNB Smart Chain (chain 56).");
@@ -1042,7 +1073,6 @@
       }
     }
 
-    // ------- MAIN ACTIONS -------
     async function connectWallet() {
       if (!window.ethereum) {
         setError("No EVM wallet detected. Use MetaMask or Trust Wallet DApp browser.");
@@ -1058,8 +1088,7 @@
         signer = provider.getSigner();
         userAddress = await signer.getAddress();
 
-        const network = await provider.getNetwork();
-        currentChainId = network.chainId;
+        await refreshChainFromWallet();
 
         potContract = new ethers.Contract(POT_TOKEN_ADDRESS, POT_ABI, signer);
         buybackContract = new ethers.Contract(BUYBACK_CONTRACT_ADDRESS, BUYBACK_ABI, signer);
@@ -1075,7 +1104,7 @@
         provider = null;
         signer = null;
         userAddress = null;
-        currentChainId = null;
+        setChainIds(null);
         updateWalletUi();
         updateNetworkUi();
       }
@@ -1085,7 +1114,7 @@
       provider = null;
       signer = null;
       userAddress = null;
-      currentChainId = null;
+      setChainIds(null);
       potContract = null;
       buybackContract = null;
       potBalanceRaw = ethers.BigNumber.from("0");
@@ -1116,7 +1145,7 @@
         return;
       }
 
-      if (currentChainId !== BSC_CHAIN_ID) {
+      if (currentChainIdNum !== BSC_CHAIN_ID) {
         setError("Please switch your wallet to BNB Smart Chain (chain 56) and try again.");
         return;
       }
@@ -1182,7 +1211,6 @@
       }
     }
 
-    // ------- EVENTS & INIT -------
     function initEvents() {
       const connectBtn = document.getElementById("connect-btn");
       const disconnectBtn = document.getElementById("disconnect-btn");
@@ -1224,8 +1252,7 @@
           }
           signer = provider.getSigner();
           userAddress = ethers.utils.getAddress(accounts[0]);
-          const network = await provider.getNetwork();
-          currentChainId = network.chainId;
+          await refreshChainFromWallet();
           potContract = new ethers.Contract(POT_TOKEN_ADDRESS, POT_ABI, signer);
           buybackContract = new ethers.Contract(BUYBACK_CONTRACT_ADDRESS, BUYBACK_ABI, signer);
 
@@ -1235,12 +1262,8 @@
           await refreshPrice();
         });
 
-        window.ethereum.on("chainChanged", async () => {
-          if (!provider) {
-            provider = new ethers.providers.Web3Provider(window.ethereum, "any");
-          }
-          const network = await provider.getNetwork();
-          currentChainId = network.chainId;
+        window.ethereum.on("chainChanged", async (chainIdHex) => {
+          setChainIds(chainIdHex);
           updateNetworkUi();
           await refreshPrice();
         });
