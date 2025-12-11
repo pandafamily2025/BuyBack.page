@@ -12,7 +12,7 @@
       content="Sell POT directly for USDT on BNB Smart Chain (BEP-20) via the official buyback contract."
     />
 
-    <!-- Ethers.js CDN -->
+    <!-- Ethers.js -->
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 
     <style>
@@ -525,7 +525,8 @@
         color: #f97373;
         text-align: center;
         margin-top: 4px;
-        min-height: 18px;
+        min-height: 26px;
+        word-break: break-word;
       }
 
       .helper-text.ok {
@@ -704,7 +705,7 @@
               <div class="info-box">
                 <div class="label-small">Estimated receive</div>
                 <div class="value-main" id="estimatedReceive">– USDT</div>
-                <div class="value-sub" id="estimatedExtra">Fees excluded</div>
+                <div class="value-sub" id="estimatedExtra">Fees not included</div>
               </div>
             </div>
 
@@ -771,7 +772,7 @@
     </div>
 
     <script>
-      // ======== CONFIG ========
+      // ============ CONFIG ============
 
       const BSC_CHAIN_ID_HEX = "0x38"; // 56
       const BSC_CHAIN_PARAMS = {
@@ -791,7 +792,6 @@
       const USDT_DECIMALS = 18;
       const POT_DECIMALS = 18;
 
-      // Minimal ABI for POT (ERC-20) and Buyback
       const ERC20_ABI = [
         "function balanceOf(address owner) view returns (uint256)",
         "function allowance(address owner, address spender) view returns (uint256)",
@@ -806,7 +806,7 @@
         "function usdt() view returns (address)",
       ];
 
-      // ======== STATE ========
+      // ============ STATE ============
 
       let provider = null;
       let ethersProvider = null;
@@ -816,11 +816,11 @@
       let potContract = null;
       let buybackContract = null;
 
-      let currentPrice = null; // USDT per POT * 10^USDT_DECIMALS
+      let currentPrice = null;
       let isConnecting = false;
       let isSelling = false;
 
-      // ======== DOM HOOKS ========
+      // ============ DOM ============
 
       const connectButton = document.getElementById("connectButton");
       const disconnectButton = document.getElementById("disconnectButton");
@@ -853,7 +853,7 @@
       const networkShortDot = document.getElementById("networkShortDot");
       const networkShortLabelText = networkShortLabel.querySelector(".network-pill-chain");
 
-      // ======== HELPERS ========
+      // ============ HELPERS ============
 
       function truncateAddress(addr) {
         if (!addr) return "Address not connected";
@@ -870,6 +870,14 @@
           minimumFractionDigits: 0,
           maximumFractionDigits: decimals,
         });
+      }
+
+      function extractErrorMessage(err) {
+        if (!err) return "Unknown error";
+        if (err.data && err.data.message) return err.data.message;
+        if (err.error && err.error.message) return err.error.message;
+        if (err.message) return err.message;
+        return String(err);
       }
 
       function setHelperMessage(message, type = "error") {
@@ -956,7 +964,7 @@
         sellButton.disabled = false;
       }
 
-      // ======== CORE FLOW ========
+      // ============ WALLET FLOW ============
 
       async function connectWalletFlow() {
         if (isConnecting) return;
@@ -967,13 +975,12 @@
           provider = getInjectedProvider();
           if (!provider) {
             setHelperMessage(
-              "No Web3 wallet detected. Try MetaMask or Trust Wallet in DApp browser.",
+              "No Web3 wallet detected. Use MetaMask or Trust Wallet in the DApp browser.",
               "error"
             );
             return;
           }
 
-          // MetaMask mobile sometimes needs this flag
           if (provider.providers && Array.isArray(provider.providers)) {
             const metamaskProvider = provider.providers.find((p) => p.isMetaMask);
             if (metamaskProvider) {
@@ -981,10 +988,23 @@
             }
           }
 
-          // 1) Request accounts FIRST
-          const accounts = await provider.request({
-            method: "eth_requestAccounts",
-          });
+          // Request accounts with fallback
+          let accounts = [];
+          try {
+            accounts = await provider.request({
+              method: "eth_requestAccounts",
+            });
+          } catch (err) {
+            console.warn("eth_requestAccounts failed, trying fallback", err);
+            try {
+              accounts = await provider.request({
+                method: "eth_accounts",
+              });
+            } catch (err2) {
+              console.warn("eth_accounts fallback failed", err2);
+              throw err;
+            }
+          }
 
           if (!accounts || !accounts.length) {
             setHelperMessage("No accounts returned from wallet.", "error");
@@ -993,12 +1013,11 @@
 
           userAddress = ethers.utils.getAddress(accounts[0]);
 
-          // 2) Get chain id AFTER accounts (works better on some wallets)
           let chainId = null;
           try {
             chainId = await provider.request({ method: "eth_chainId" });
           } catch (err) {
-            console.warn("Failed to read chainId initially", err);
+            console.warn("Failed to read chainId", err);
           }
 
           ethersProvider = new ethers.providers.Web3Provider(provider, "any");
@@ -1019,7 +1038,6 @@
           await refreshPrice();
           updateEstimate();
 
-          // Try network switch ONLY if not BSC, but do not fail connect if it does not work
           if (!chainId || chainId.toLowerCase() !== BSC_CHAIN_ID_HEX.toLowerCase()) {
             try {
               await provider.request({
@@ -1030,8 +1048,7 @@
               setNetworkUI(newChainId);
               setHelperMessage("Switched to BNB Smart Chain.", "ok");
             } catch (switchError) {
-              console.warn("Network switch rejected or failed", switchError);
-              // Try to add chain only if it is not present
+              console.warn("Network switch failed or rejected", switchError);
               if (switchError && switchError.code === 4902) {
                 try {
                   await provider.request({
@@ -1040,7 +1057,10 @@
                   });
                   const newChainId = await provider.request({ method: "eth_chainId" });
                   setNetworkUI(newChainId);
-                  setHelperMessage("BNB Smart Chain added. Please approve in your wallet.", "ok");
+                  setHelperMessage(
+                    "BNB Smart Chain added. Please approve in your wallet.",
+                    "ok"
+                  );
                 } catch (addErr) {
                   console.warn("Add chain rejected", addErr);
                 }
@@ -1053,11 +1073,10 @@
             }
           }
 
-          // Attach listeners ONCE
           attachProviderListeners();
         } catch (err) {
           console.error("Failed to connect wallet", err);
-          setHelperMessage("Failed to connect wallet. Please try again.", "error");
+          setHelperMessage("Failed to connect wallet: " + extractErrorMessage(err), "error");
           setWalletUIDisconnected();
         } finally {
           isConnecting = false;
@@ -1068,8 +1087,14 @@
       function attachProviderListeners() {
         if (!provider || !provider.on) return;
 
-        provider.removeAllListeners && provider.removeAllListeners("accountsChanged");
-        provider.removeAllListeners && provider.removeAllListeners("chainChanged");
+        if (provider.removeAllListeners) {
+          try {
+            provider.removeAllListeners("accountsChanged");
+            provider.removeAllListeners("chainChanged");
+          } catch (e) {
+            console.warn("removeAllListeners not supported", e);
+          }
+        }
 
         provider.on("accountsChanged", (accounts) => {
           if (!accounts || !accounts.length) {
@@ -1098,9 +1123,7 @@
         if (!potContract || !userAddress) return;
         try {
           const balRaw = await potContract.balanceOf(userAddress);
-          const bal = Number(
-            ethers.utils.formatUnits(balRaw, POT_DECIMALS)
-          );
+          const bal = Number(ethers.utils.formatUnits(balRaw, POT_DECIMALS));
           potBalanceEl.textContent = `${formatNumber(bal, 4)} POT`;
         } catch (err) {
           console.warn("Failed to load POT balance", err);
@@ -1147,17 +1170,21 @@
           return;
         }
 
-        const amountPOT = ethers.utils.parseUnits(raw, POT_DECIMALS);
-        const usdt = amountPOT.mul(currentPrice).div(
-          ethers.BigNumber.from(10).pow(POT_DECIMALS)
-        );
-
-        const usdtFloat = Number(
-          ethers.utils.formatUnits(usdt, USDT_DECIMALS)
-        );
-
-        estimatedReceiveEl.textContent = `${formatNumber(usdtFloat, 4)} USDT`;
-        estimatedExtraEl.textContent = "Network fees are not included";
+        try {
+          const amountPOT = ethers.utils.parseUnits(raw, POT_DECIMALS);
+          const usdt = amountPOT.mul(currentPrice).div(
+            ethers.BigNumber.from(10).pow(POT_DECIMALS)
+          );
+          const usdtFloat = Number(
+            ethers.utils.formatUnits(usdt, USDT_DECIMALS)
+          );
+          estimatedReceiveEl.textContent = `${formatNumber(usdtFloat, 4)} USDT`;
+          estimatedExtraEl.textContent = "Network fees are not included";
+        } catch (err) {
+          console.warn("Failed to update estimate", err);
+          estimatedReceiveEl.textContent = "– USDT";
+          estimatedExtraEl.textContent = "Invalid amount";
+        }
       }
 
       async function sellFlow() {
@@ -1177,7 +1204,7 @@
           const chainId = await provider.request({ method: "eth_chainId" });
           if (chainId.toLowerCase() !== BSC_CHAIN_ID_HEX.toLowerCase()) {
             setHelperMessage(
-              "Wrong network. Please switch to BNB Smart Chain (56) in your wallet.",
+              "Wrong network. Switch to BNB Smart Chain (56) in your wallet.",
               "error"
             );
             return;
@@ -1193,6 +1220,7 @@
         try {
           const amountPOT = ethers.utils.parseUnits(raw, POT_DECIMALS);
 
+          // Safe approve pattern for tokens that require setting allowance to 0 first
           const currentAllowance = await potContract.allowance(
             userAddress,
             BUYBACK_CONTRACT_ADDRESS
@@ -1200,9 +1228,18 @@
 
           if (currentAllowance.lt(amountPOT)) {
             setHelperMessage("Approving POT spend for buyback contract...", "muted");
+
+            if (!currentAllowance.isZero()) {
+              const resetTx = await potContract.approve(
+                BUYBACK_CONTRACT_ADDRESS,
+                ethers.constants.Zero
+              );
+              await resetTx.wait(1);
+            }
+
             const approveTx = await potContract.approve(
               BUYBACK_CONTRACT_ADDRESS,
-              amountPOT
+              ethers.constants.MaxUint256
             );
             await approveTx.wait(1);
           }
@@ -1220,10 +1257,11 @@
           updateEstimate();
         } catch (err) {
           console.error("Sell transaction failed", err);
+          const msg = extractErrorMessage(err);
           if (err && (err.code === 4001 || err.code === "ACTION_REJECTED")) {
             setHelperMessage("User rejected transaction.", "error");
           } else {
-            setHelperMessage("Sell failed. Check wallet and try again.", "error");
+            setHelperMessage("Sell failed: " + msg, "error");
           }
         } finally {
           isSelling = false;
@@ -1240,11 +1278,14 @@
 
         setWalletUIDisconnected();
         setNetworkUI(null);
-        setHelperMessage("Disconnected locally. You may still be connected in wallet.", "muted");
+        setHelperMessage(
+          "Disconnected locally. You may still be connected inside your wallet.",
+          "muted"
+        );
         setSellButtonState();
       }
 
-      // ======== EVENT WIRING ========
+      // ============ EVENTS ============
 
       connectButton.addEventListener("click", connectWalletFlow);
       disconnectButton.addEventListener("click", disconnectWalletFlow);
@@ -1282,7 +1323,7 @@
         });
       });
 
-      // Initial UI state
+      // Initial UI
       setWalletUIDisconnected();
       setNetworkUI(null);
       pricePerPotEl.textContent = "Loading...";
@@ -1290,7 +1331,6 @@
       estimatedReceiveEl.textContent = "– USDT";
       estimatedExtraEl.textContent = "Enter POT amount";
 
-      // Try to read network if provider already injected (no account request here)
       window.addEventListener("load", async () => {
         const injected = getInjectedProvider();
         if (!injected) return;
