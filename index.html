@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1"
+  />
+  <title>POT Buyback Portal</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #020617;
+      --card-bg: #020617;
+      --card-border: rgba(148, 163, 184, 0.35);
+      --accent: #22c55e;
+      --accent-soft: rgba(34, 197, 94, 0.12);
+      --accent-red: #f97373;
+      --accent-red-soft: rgba(248, 113, 113, 0.12);
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --input-bg: #020617;
+      --radius-xl: 28px;
+      --radius-lg: 18px;
+      --radius-pill: 999px;
+      --shadow-soft: 0 22px 60px rgba(15, 23, 42, 0.9);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        sans-serif;
+      background: radial-gradient(circle at top, #0f172a 0, #020617 55%, #000 100%);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 12px;
+    }
+
+    .page {
+      max-width: 460px;
+      width: 100%;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-soft);
+      padding: 18px 16px 20px;
+      border: 1px solid var(--card-border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at top left, rgba(34, 197, 94, 0.11), transparent 60%),
+        radial-gradient(circle at bottom right, rgba(56, 189, 248, 0.08), transparent 65%);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    .card-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .header {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .logo-wrap {
+      width: 60px;
+      height: 60px;
+      border-radius: 999px;
+      padding: 2px;
+      background: radial-gradient(circle at top, #facc15, #f97316, #22c55e);
+      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.7);
+      flex-shrink: 0;
+    }
+
+    .logo-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: inherit;
+      background: #020617;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .logo-inner img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .header-text h1 {
+      margin: 0;
+      font-size: 19px;
+      letter-spacing: 0.02em;
+    }
+
+    .header-text p {
+      margin: 4px 0 0;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--muted);
+    }
+
+    .status-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      border-radius: var(--radius-pill);
+      font-size: 11px;
+      padding: 4px 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--muted);
+    }
+
+    .pill-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+    }
+
+    .pill-dot.connected {
+      background: #22c55e;
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    .pill-dot.disconnected {
+      background: #f97373;
+      box-shadow: 0 0 0 3px var(--accent-red-soft);
+    }
+
+    .section {
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      background: rgba(15, 23, 42, 0.96);
+      padding: 12px 11px;
+      margin-bottom: 10px;
+    }
+
+    .section-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .wallet-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .wallet-address {
+      font-size: 12px;
+      color: var(--muted);
+      word-break: break-all;
+      flex: 1;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+    .btn {
+      border-radius: var(--radius-pill);
+      border: none;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.12s;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: white;
+      box-shadow: 0 10px 26px rgba(34, 197, 94, 0.45);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.55;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: rgba(15, 23, 42, 0.95);
+      color: var(--muted);
+      border: 1px solid rgba(148, 163, 184, 0.5);
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+    }
+
+    .btn:active:not(:disabled) {
+      transform: translateY(0);
+      box-shadow: none;
+    }
+
+    .amount-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .amount-label {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .amount-balance {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .percent-row {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+
+    .percent-btn {
+      flex: 1;
+      min-width: 0;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      background: rgba(15, 23, 42, 0.95);
+      color: var(--muted);
+      font-size: 11px;
+      padding: 5px 0;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .percent-btn.active {
+      background: var(--accent-soft);
+      border-color: #22c55e;
+      color: #bbf7d0;
+    }
+
+    .amount-row {
+      display: flex;
+      align-items: center;
+      background: var(--input-bg);
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      overflow: hidden;
+    }
+
+    .amount-row input {
+      flex: 1;
+      padding: 10px 12px;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .amount-row input::placeholder {
+      color: var(--muted);
+      opacity: 0.7;
+    }
+
+    .token-btn {
+      border: none;
+      border-left: 1px solid rgba(148, 163, 184, 0.5);
+      padding: 0 16px;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.98);
+      color: #e5e7eb;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: default;
+    }
+
+    .token-pill {
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      background: radial-gradient(circle at top, #facc15, #f97316);
+    }
+
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      margin-top: 6px;
+    }
+
+    .price-label {
+      color: var(--muted);
+    }
+
+    .price-value {
+      font-weight: 500;
+    }
+
+    .price-loading {
+      color: #eab308;
+    }
+
+    .price-error {
+      color: #f97373;
+    }
+
+    .main-action {
+      margin-top: 14px;
+    }
+
+    .main-action button {
+      width: 100%;
+      padding: 12px 18px;
+      font-size: 15px;
+      border-radius: var(--radius-pill);
+    }
+
+    .helper-text {
+      margin-top: 6px;
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .helper-text.error {
+      color: var(--accent-red);
+    }
+
+    .footer {
+      margin-top: 10px;
+      font-size: 10px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .footer span {
+      font-family: "SF Mono", ui-monospace, Menlo, Monaco, Consolas,
+        "Liberation Mono", "Courier New", monospace;
+      font-size: 10px;
+    }
+
+    @media (max-width: 480px) {
+      .card {
+        padding: 16px 12px 18px;
+      }
+      .header-text h1 {
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="card">
+      <div class="card-inner">
+        <div class="header">
+          <div class="logo-wrap">
+            <div class="logo-inner">
+              <img src="panda-logo.png" alt="Panda Logo" />
+            </div>
+          </div>
+          <div class="header-text">
+            <h1>POT Buyback Portal</h1>
+            <p>SELL POT DIRECTLY FOR USDT ON BSC</p>
+          </div>
+        </div>
+
+        <div class="status-row">
+          <div class="pill">
+            <span class="pill-dot disconnected" id="pill-conn-dot"></span>
+            <span id="pill-conn-text">Disconnected</span>
+          </div>
+          <div class="pill">
+            <span class="pill-dot disconnected" id="pill-net-dot"></span>
+            <span id="pill-net-text">Network: Unknown</span>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Wallet</div>
+          <div class="wallet-row">
+            <div class="wallet-address" id="wallet-address">
+              Not connected
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" id="btn-connect">
+              Connect Wallet
+            </button>
+            <button class="btn btn-secondary" id="btn-disconnect">
+              Disconnect
+            </button>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="amount-header">
+            <div class="amount-label">Amount of POT to sell</div>
+            <div class="amount-balance">
+              Balance: <span id="pot-balance">–</span> POT
+            </div>
+          </div>
+
+          <div class="percent-row">
+            <button class="percent-btn" data-percent="25">25%</button>
+            <button class="percent-btn" data-percent="50">50%</button>
+            <button class="percent-btn" data-percent="75">75%</button>
+            <button class="percent-btn" data-percent="100">100%</button>
+          </div>
+
+          <div class="amount-row">
+            <input
+              id="amount-input"
+              type="number"
+              min="0"
+              step="any"
+              placeholder="e.g. 1000"
+              inputmode="decimal"
+            />
+            <button class="token-btn" type="button">
+              <span class="token-pill"></span>
+              <span>POT</span>
+            </button>
+          </div>
+
+          <div class="price-row">
+            <div>
+              <div class="price-label">Buyback Price:</div>
+              <div class="price-value" id="price-display">
+                <span class="price-loading">Loading...</span>
+              </div>
+            </div>
+            <div>
+              <div class="price-label">Estimated Receive:</div>
+              <div class="price-value" id="estimate-display">– USDT</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="main-action">
+          <button class="btn btn-primary" id="btn-sell" disabled>
+            Sell POT for USDT
+          </button>
+          <div class="helper-text" id="helper-text">
+            Connect your wallet to start.
+          </div>
+        </div>
+
+        <div class="footer">
+          Payout token: BEP-20 USDT
+          <span>(from buyback contract liquidity)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const BSC_CHAIN_ID_HEX = "0x38";
+    const POT_ADDRESS = "0x66059443da552aAe6a032E3a84307E6BBbd3cd01";
+    const BUYBACK_ADDRESS = "0x9652CC7355C759DB295E8bd5A21d4D707FC07085";
+    const DECIMALS = 18;
+
+    const POT_ABI = [
+      "function balanceOf(address) view returns (uint256)",
+      "function allowance(address owner, address spender) view returns (uint256)",
+      "function approve(address spender, uint256 amount) returns (bool)",
+      "function decimals() view returns (uint8)"
+    ];
+
+    const BUYBACK_ABI = [
+      "function price() view returns (uint256)",
+      "function sellTokens(uint256 amount) external"
+    ];
+
+    let provider = null;
+    let signer = null;
+    let userAddress = null;
+    let potContract = null;
+    let buybackContract = null;
+    let potBalance = ethers.BigNumber.from(0);
+    let buybackPrice = null;
+
+    const pillConnDot = document.getElementById("pill-conn-dot");
+    const pillConnText = document.getElementById("pill-conn-text");
+    const pillNetDot = document.getElementById("pill-net-dot");
+    const pillNetText = document.getElementById("pill-net-text");
+
+    const walletAddressEl = document.getElementById("wallet-address");
+    const btnConnect = document.getElementById("btn-connect");
+    const btnDisconnect = document.getElementById("btn-disconnect");
+    const potBalanceEl = document.getElementById("pot-balance");
+    const amountInput = document.getElementById("amount-input");
+    const percentButtons = Array.from(
+      document.querySelectorAll(".percent-btn")
+    );
+    const priceDisplay = document.getElementById("price-display");
+    const estimateDisplay = document.getElementById("estimate-display");
+    const btnSell = document.getElementById("btn-sell");
+    const helperText = document.getElementById("helper-text");
+
+    function formatAddress(addr) {
+      if (!addr) return "Not connected";
+      return addr.slice(0, 6) + "..." + addr.slice(-4);
+    }
+
+    function formatAmount(bn, decimals = DECIMALS, maxFrac = 4) {
+      if (!bn) return "0";
+      const str = ethers.utils.formatUnits(bn, decimals);
+      const parts = str.split(".");
+      const intPart = parts[0];
+      const fracPart = parts[1] || "";
+      if (maxFrac === 0) return intPart;
+      const trimmedFrac = fracPart.slice(0, maxFrac).replace(/0+$/, "");
+      return trimmedFrac ? intPart + "." + trimmedFrac : intPart;
+    }
+
+    function clearPercents() {
+      percentButtons.forEach((btn) => btn.classList.remove("active"));
+    }
+
+    function setConnectionStatus(connected) {
+      if (connected) {
+        pillConnDot.classList.remove("disconnected");
+        pillConnDot.classList.add("connected");
+        pillConnText.textContent = "Wallet Connected";
+      } else {
+        pillConnDot.classList.remove("connected");
+        pillConnDot.classList.add("disconnected");
+        pillConnText.textContent = "Disconnected";
+      }
+    }
+
+    function setNetworkStatus(onBsc, chainIdHex) {
+      if (onBsc) {
+        pillNetDot.classList.remove("disconnected");
+        pillNetDot.classList.add("connected");
+        pillNetText.textContent = "Network: BNB Smart Chain";
+      } else {
+        pillNetDot.classList.remove("connected");
+        pillNetDot.classList.add("disconnected");
+        const label = chainIdHex ? `Unknown (${parseInt(chainIdHex, 16)})` : "Unknown";
+        pillNetText.textContent = "Network: " + label;
+      }
+    }
+
+    function setHelper(msg, isError = false) {
+      helperText.textContent = msg;
+      helperText.classList.toggle("error", isError);
+    }
+
+    function setPriceLoading() {
+      priceDisplay.innerHTML = '<span class="price-loading">Loading...</span>';
+    }
+
+    function setPriceError() {
+      priceDisplay.innerHTML = '<span class="price-error">Error loading price</span>';
+    }
+
+    function updateEstimate() {
+      const val = amountInput.value.trim();
+      if (!val || !buybackPrice) {
+        estimateDisplay.textContent = "– USDT";
+        return;
+      }
+      try {
+        const amountWei = ethers.utils.parseUnits(val, DECIMALS);
+        const est = amountWei
+          .mul(buybackPrice)
+          .div(ethers.BigNumber.from(10).pow(DECIMALS));
+        estimateDisplay.textContent = formatAmount(est, 18, 4) + " USDT";
+      } catch {
+        estimateDisplay.textContent = "– USDT";
+      }
+    }
+
+    async function switchOrAddBsc() {
+      try {
+        await window.ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: BSC_CHAIN_ID_HEX }]
+        });
+      } catch (switchError) {
+        if (switchError.code === 4902) {
+          await window.ethereum.request({
+            method: "wallet_addEthereumChain",
+            params: [
+              {
+                chainId: BSC_CHAIN_ID_HEX,
+                chainName: "BNB Smart Chain",
+                nativeCurrency: {
+                  name: "BNB",
+                  symbol: "BNB",
+                  decimals: 18
+                },
+                rpcUrls: ["https://bsc-dataseed.binance.org/"],
+                blockExplorerUrls: ["https://bscscan.com"]
+              }
+            ]
+          });
+        } else {
+          throw switchError;
+        }
+      }
+    }
+
+    async function connectWallet() {
+      if (!window.ethereum) {
+        alert("No EVM wallet detected. Please install MetaMask / Trust Wallet.");
+        return;
+      }
+
+      try {
+        const accounts = await window.ethereum.request({
+          method: "eth_requestAccounts"
+        });
+        const chainId = await window.ethereum.request({
+          method: "eth_chainId"
+        });
+
+        if (chainId !== BSC_CHAIN_ID_HEX) {
+          try {
+            await switchOrAddBsc();
+          } catch (e) {
+            console.error("Switch network failed", e);
+            setNetworkStatus(false, chainId);
+            setHelper(
+              "You are not on BNB Smart Chain (chain 56). Please switch in your wallet.",
+              true
+            );
+            btnSell.disabled = true;
+            setConnectionStatus(true);
+            userAddress = accounts[0];
+            walletAddressEl.textContent = formatAddress(userAddress);
+            return;
+          }
+        }
+
+        provider = new ethers.providers.Web3Provider(window.ethereum);
+        signer = provider.getSigner();
+        userAddress = accounts[0];
+
+        potContract = new ethers.Contract(POT_ADDRESS, POT_ABI, signer);
+        buybackContract = new ethers.Contract(
+          BUYBACK_ADDRESS,
+          BUYBACK_ABI,
+          signer
+        );
+
+        setConnectionStatus(true);
+        setNetworkStatus(true, BSC_CHAIN_ID_HEX);
+        walletAddressEl.textContent = formatAddress(userAddress);
+        setHelper("Wallet connected. Ready to sell POT.");
+
+        await refreshBalancesAndPrice();
+        btnSell.disabled = false;
+      } catch (err) {
+        console.error("Connect error:", err);
+        if (err.code !== 4001) {
+          alert("Failed to connect wallet. Please try again.");
+        }
+      }
+    }
+
+    function disconnectWallet() {
+      provider = null;
+      signer = null;
+      userAddress = null;
+      potContract = null;
+      buybackContract = null;
+      potBalance = ethers.BigNumber.from(0);
+      buybackPrice = null;
+
+      walletAddressEl.textContent = "Not connected";
+      potBalanceEl.textContent = "–";
+      setConnectionStatus(false);
+      setNetworkStatus(false, null);
+      setPriceLoading();
+      estimateDisplay.textContent = "– USDT";
+      amountInput.value = "";
+      clearPercents();
+      btnSell.disabled = true;
+      setHelper("Connect your wallet to start.");
+    }
+
+    async function refreshBalancesAndPrice() {
+      if (!signer || !potContract || !buybackContract || !userAddress) return;
+
+      try {
+        const [bal, price] = await Promise.all([
+          potContract.balanceOf(userAddress),
+          buybackContract.price()
+        ]);
+        potBalance = bal;
+        buybackPrice = price;
+        potBalanceEl.textContent = formatAmount(bal, DECIMALS, 4) || "0";
+        priceDisplay.textContent =
+          formatAmount(price, DECIMALS, 6) + " USDT per POT";
+        updateEstimate();
+      } catch (e) {
+        console.error("Failed to load balance/price", e);
+        potBalanceEl.textContent = "–";
+        setPriceError();
+      }
+    }
+
+    async function handleSell() {
+      if (!signer || !potContract || !buybackContract || !userAddress) {
+        setHelper("Connect your wallet first.", true);
+        return;
+      }
+
+      const val = amountInput.value.trim();
+      if (!val || Number(val) <= 0) {
+        setHelper("Enter a valid POT amount.", true);
+        return;
+      }
+
+      try {
+        const amountWei = ethers.utils.parseUnits(val, DECIMALS);
+
+        if (amountWei.gt(potBalance)) {
+          setHelper("Amount exceeds your POT balance.", true);
+          return;
+        }
+
+        if (!buybackPrice) {
+          setHelper("Buyback price not loaded. Please retry later.", true);
+          return;
+        }
+
+        setHelper("Preparing transaction…");
+        btnSell.disabled = true;
+
+        const allowance = await potContract.allowance(
+          userAddress,
+          BUYBACK_ADDRESS
+        );
+
+        if (allowance.lt(amountWei)) {
+          setHelper("Approving POT for buyback…");
+          const approveTx = await potContract.approve(
+            BUYBACK_ADDRESS,
+            amountWei
+          );
+          await approveTx.wait();
+        }
+
+        setHelper("Sending sell transaction…");
+        const sellTx = await buybackContract.sellTokens(amountWei);
+        await sellTx.wait();
+
+        setHelper("Sell completed successfully ✅");
+        await refreshBalancesAndPrice();
+        btnSell.disabled = false;
+      } catch (e) {
+        console.error("Sell error:", e);
+        btnSell.disabled = false;
+        if (e.code === 4001) {
+          setHelper("Transaction rejected by user.", true);
+        } else {
+          setHelper(
+            "Sell transaction failed. Check your wallet and try again.",
+            true
+          );
+        }
+      }
+    }
+
+    btnConnect.addEventListener("click", connectWallet);
+    btnDisconnect.addEventListener("click", disconnectWallet);
+    btnSell.addEventListener("click", handleSell);
+
+    percentButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        if (!potBalance || potBalance.isZero()) return;
+        const pct = Number(btn.dataset.percent || "0");
+        clearPercents();
+        btn.classList.add("active");
+        const amtWei = potBalance.mul(pct).div(100);
+        amountInput.value = formatAmount(amtWei, DECIMALS, 6);
+        updateEstimate();
+      });
+    });
+
+    amountInput.addEventListener("input", () => {
+      clearPercents();
+      updateEstimate();
+    });
+
+    if (window.ethereum) {
+      window.ethereum.on("accountsChanged", () => {
+        window.location.reload();
+      });
+      window.ethereum.on("chainChanged", () => {
+        window.location.reload();
+      });
+
+      window.ethereum
+        .request({ method: "eth_accounts" })
+        .then((accounts) => {
+          if (accounts && accounts.length > 0) {
+            connectWallet();
+          }
+        })
+        .catch(() => {});
+    } else {
+      setHelper("No EVM wallet detected. Install MetaMask / Trust Wallet.");
+    }
+
+    setConnectionStatus(false);
+    setNetworkStatus(false, null);
+    setPriceLoading();
+  </script>
+</body>
+</html>
