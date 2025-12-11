@@ -5,11 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>POT Buyback Portal</title>
 
-  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
   <!-- Ethers.js -->
-  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js" integrity="sha384-V+uN+Z2B5Zlp3O8M3UsN0bqVztlWlak9QqjFXoowP8Y/kIaj0f7KvgSfyF7vGrC9" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 
   <style>
     * {
@@ -220,11 +219,6 @@
       font-size: 11px;
     }
 
-    .badge-muted {
-      opacity: 0.8;
-      font-weight: 500;
-    }
-
     .section {
       margin-bottom: 14px;
       padding: 10px 11px 11px;
@@ -247,12 +241,6 @@
       text-transform: uppercase;
       color: #7f8bb2;
       font-weight: 500;
-    }
-
-    .section-caption {
-      font-size: 10px;
-      color: #9aa6d2;
-      text-align: right;
     }
 
     .wallet-chain-label {
@@ -486,13 +474,6 @@
       color: #35f3a6;
     }
 
-    .warning {
-      margin-top: 8px;
-      font-size: 11px;
-      color: #ffb74d;
-      text-align: center;
-    }
-
     .status-grid {
       display: flex;
       gap: 8px;
@@ -712,7 +693,7 @@
               <div class="token-pill">Playtopia Organization Token</div>
             </div>
             <div class="subtitle">
-              Sell <strong>POT</strong> directly for <strong>USDT</strong> on <strong>BSC</strong><br />
+              Sell <strong>POT</strong> directly for <strong>USDT</strong> on <strong>BSC</strong>
             </div>
           </div>
         </header>
@@ -720,7 +701,7 @@
         <div class="mode-row">
           <div class="pill">
             <span class="pill-label">Mode</span>
-            <span class="pill-value">DIRECT CONTRACT BUYBACK</span>
+            <span class="pill-value">Direct contract buyback</span>
           </div>
           <div class="pill">
             <span class="pill-label">Payout token</span>
@@ -729,21 +710,19 @@
         </div>
 
         <div class="status-row">
-          <div class="status-badge" id="wallet-badge">
+          <div class="status-badge">
             <div class="status-left">
               <span class="status-dot" id="wallet-dot"></span>
               <span class="status-label">Wallet</span>
             </div>
             <span class="status-text" id="wallet-badge-text">Disconnected</span>
           </div>
-          <div class="status-badge" id="network-badge">
+          <div class="status-badge">
             <div class="status-left">
               <span class="status-dot" id="network-dot"></span>
               <span class="status-label">Network</span>
             </div>
-            <span class="status-text" id="network-badge-text">
-              Unknown (–)
-            </span>
+            <span class="status-text" id="network-badge-text">Unknown (–)</span>
           </div>
         </div>
 
@@ -752,9 +731,7 @@
             <div class="section-title">Wallet</div>
             <div class="wallet-chain-label">
               Chain:
-              <span class="wallet-chain-value" id="wallet-chain-label">
-                BNB Smart Chain · BEP-20
-              </span>
+              <span class="wallet-chain-value" id="wallet-chain-label">Unknown</span>
             </div>
           </div>
 
@@ -769,8 +746,8 @@
         </section>
 
         <section class="section">
-          <div class="section-header">
-            <div class="section-title">Amount of POT to sell</div>
+          <div class="amount-row-top">
+            <div class="amount-label">Amount of POT to sell</div>
             <div class="balance-label">
               Balance:
               <span class="balance-value" id="pot-balance-label">– POT</span>
@@ -802,35 +779,27 @@
           <div class="rates-row">
             <div class="rate-box">
               <div class="rate-label">Buyback price</div>
-              <div class="rate-main" id="buyback-price-text">
-                Loading...
-              </div>
-              <div class="rate-sub">
-                Price from buyback contract
-              </div>
+              <div class="rate-main" id="buyback-price-text">Loading...</div>
+              <div class="rate-sub">Price from buyback contract</div>
             </div>
             <div class="rate-box">
               <div class="rate-label">Estimated receive</div>
-              <div class="rate-main rate-highlight" id="estimated-receive-text">
-                – USDT
-              </div>
-              <div class="rate-sub">
-                Network fees are not included
-              </div>
+              <div class="rate-main rate-highlight" id="estimated-receive-text">– USDT</div>
+              <div class="rate-sub">Network fees are not included</div>
             </div>
           </div>
 
           <div class="status-grid">
             <div class="status-box">
               <div class="status-box-label">Wallet status</div>
-              <div class="status-box-value" id="wallet-status-chip">
+              <div class="status-box-value">
                 <span class="status-pill-dot" id="wallet-status-dot"></span>
                 <span id="wallet-status-text">Disconnected</span>
               </div>
             </div>
             <div class="status-box">
               <div class="status-box-label">Network status</div>
-              <div class="status-box-value" id="network-status-chip">
+              <div class="status-box-value">
                 <span class="status-pill-dot" id="network-status-dot"></span>
                 <span id="network-status-text">Unknown</span>
               </div>
@@ -844,10 +813,7 @@
             </button>
           </div>
 
-          <div id="helper-text" class="helper-text">
-            Connect your wallet to start.
-          </div>
-
+          <div id="helper-text" class="helper-text">Connect your wallet to start.</div>
           <div id="error-text" class="error-text"></div>
         </section>
 
@@ -869,9 +835,7 @@
               POT token:
               <span class="contract-address">0x66059443da552aAe6a032E3a84307E6BBbd3cd01</span>
             </div>
-            <small>
-              This interface only interacts with the contracts above; it does not hold your funds.
-            </small>
+            <small>This interface only interacts with the contracts above; it does not hold your funds.</small>
           </div>
         </footer>
       </div>
@@ -879,9 +843,8 @@
   </div>
 
   <script>
-    // ----------- CONSTANTS -------------
-    const BSC_CHAIN_ID_HEX = "0x38"; // 56
-    const BSC_CHAIN_NAME = "BNB Smart Chain";
+    // ------- CONSTANTS -------
+    const BSC_CHAIN_ID = 56;
 
     const POT_TOKEN_ADDRESS = "0x66059443da552aAe6a032E3a84307E6BBbd3cd01";
     const BUYBACK_CONTRACT_ADDRESS = "0x9652CC7355C759DB295E8bd5A21d4D707FC07085";
@@ -889,64 +852,45 @@
     const POT_DECIMALS = 18;
     const USDT_DECIMALS = 18;
 
-    // Minimal ABI for POT token (ERC-20)
     const POT_ABI = [
       "function balanceOf(address owner) view returns (uint256)",
       "function allowance(address owner, address spender) view returns (uint256)",
-      "function approve(address spender, uint256 amount) returns (bool)",
-      "function decimals() view returns (uint8)"
+      "function approve(address spender, uint256 amount) returns (bool)"
     ];
 
-    // Minimal ABI for buyback contract
     const BUYBACK_ABI = [
       "function price() view returns (uint256)",
-      "function sellTokens(uint256 amount) external",
-      "function token() view returns (address)",
-      "function usdt() view returns (address)",
-      "function owner() view returns (address)"
+      "function sellTokens(uint256 amount) external"
     ];
 
-    // ----------- STATE -------------
+    // ------- STATE -------
     let provider = null;
     let signer = null;
     let userAddress = null;
+    let currentChainId = null;
 
     let potContract = null;
     let buybackContract = null;
 
     let potBalanceRaw = ethers.BigNumber.from("0");
-    let buybackPriceRaw = null; // price in USDT (18 decimals) per 1 POT (18 decimals)
+    let buybackPriceRaw = null;
 
-    // ----------- HELPERS -------------
-
-    function getEthereumProvider() {
-      if (window.ethereum) return window.ethereum;
-      if (window.trustwallet) return window.trustwallet;
-      if (window.BinanceChain) return window.BinanceChain;
-      return null;
+    // ------- HELPERS -------
+    function setError(msg) {
+      const el = document.getElementById("error-text");
+      if (el) el.textContent = msg || "";
+      if (msg) console.error("[Buyback UI]", msg);
     }
 
-    function normalizeChainId(chainId) {
-      if (!chainId && chainId !== 0) return null;
+    function setHelper(msg) {
+      const el = document.getElementById("helper-text");
+      if (el) el.textContent = msg || "";
+    }
 
-      // Already hex string
-      if (typeof chainId === "string") {
-        if (chainId.startsWith("0x") || chainId.startsWith("0X")) {
-          return chainId.toLowerCase();
-        }
-        const dec = Number(chainId);
-        if (Number.isNaN(dec)) return null;
-        return "0x" + dec.toString(16);
-      }
-
-      // Number or BigInt
-      if (typeof chainId === "number" || typeof chainId === "bigint") {
-        const dec = Number(chainId);
-        if (Number.isNaN(dec)) return null;
-        return "0x" + dec.toString(16);
-      }
-
-      return null;
+    function setDotOk(el, ok) {
+      if (!el) return;
+      if (ok) el.classList.add("ok");
+      else el.classList.remove("ok");
     }
 
     function formatAddress(addr) {
@@ -956,357 +900,210 @@
 
     function formatAmount(value, decimals, maxDecimals = 6) {
       try {
-        const asFloat = Number(ethers.utils.formatUnits(value, decimals));
-        if (!isFinite(asFloat)) return "0";
-
-        if (asFloat === 0) return "0";
-
-        // For very small values, show in scientific-like form
-        if (asFloat < 0.000001) {
-          return asFloat.toExponential(2);
-        }
-
-        let text = asFloat.toFixed(maxDecimals);
-        text = text.replace(/\.0+$/, "");
-        text = text.replace(/(\.\d*?)0+$/, "$1");
-        return text;
-      } catch (e) {
+        const n = Number(ethers.utils.formatUnits(value, decimals));
+        if (!isFinite(n) || n === 0) return "0";
+        if (n < 0.000001) return n.toExponential(2);
+        let t = n.toFixed(maxDecimals);
+        t = t.replace(/\.0+$/, "");
+        t = t.replace(/(\.\d*?)0+$/, "$1");
+        return t;
+      } catch {
         return "0";
       }
     }
 
-    function setStatusDot(element, isOk) {
-      if (!element) return;
-      if (isOk) {
-        element.classList.add("ok");
-      } else {
-        element.classList.remove("ok");
-      }
+    function clearPercentBtns() {
+      document.querySelectorAll(".percent-btn").forEach((b) => b.classList.remove("active"));
     }
 
-    function clearPercentButtons() {
-      document.querySelectorAll(".percent-btn").forEach((btn) => {
-        btn.classList.remove("active");
-      });
-    }
-
-    function setError(message) {
-      const el = document.getElementById("error-text");
-      if (el) el.textContent = message || "";
-      console.error("[Buyback UI]", message);
-    }
-
-    function setHelper(message) {
-      const el = document.getElementById("helper-text");
-      if (el) el.textContent = message || "";
-    }
-
-    async function getCurrentChainIdHex() {
-      const eth = getEthereumProvider();
-      if (!eth) return null;
-
-      try {
-        const raw = await eth.request({ method: "eth_chainId" });
-        return normalizeChainId(raw);
-      } catch (e) {
-        console.warn("Failed to read chainId", e);
-        return null;
-      }
-    }
-
-    async function ensureBscNetworkInteractive(showErrors = true) {
-      const eth = getEthereumProvider();
-      if (!eth) {
-        if (showErrors) setError("No EVM wallet detected. Please use MetaMask or Trust Wallet.");
-        return false;
-      }
-
-      const current = await getCurrentChainIdHex();
-      if (current === BSC_CHAIN_ID_HEX) return true;
-
-      // Try wallet_switchEthereumChain (MetaMask, some others)
-      try {
-        await eth.request({
-          method: "wallet_switchEthereumChain",
-          params: [{ chainId: BSC_CHAIN_ID_HEX }]
-        });
-        return true;
-      } catch (switchError) {
-        console.warn("wallet_switchEthereumChain failed", switchError);
-        if (showErrors) {
-          setError(
-            "Please switch your wallet network to BNB Smart Chain (chain 56) and try again."
-          );
-        }
-        return false;
-      }
-    }
-
-    async function initContracts() {
-      if (!signer) return;
-
-      potContract = new ethers.Contract(POT_TOKEN_ADDRESS, POT_ABI, signer);
-      buybackContract = new ethers.Contract(
-        BUYBACK_CONTRACT_ADDRESS,
-        BUYBACK_ABI,
-        signer
-      );
-    }
-
-    async function refreshBuybackPrice() {
-      const priceEl = document.getElementById("buyback-price-text");
-      if (!buybackContract) {
-        if (priceEl) priceEl.textContent = "Price unavailable";
-        return;
-      }
-
-      try {
-        const priceRaw = await buybackContract.price();
-        buybackPriceRaw = priceRaw;
-
-        const priceText = formatAmount(priceRaw, USDT_DECIMALS, 8);
-        if (priceEl) {
-          priceEl.textContent = `${priceText} USDT per POT`;
-        }
-
-        updateEstimate();
-      } catch (e) {
-        console.error("Error loading buyback price", e);
-        if (priceEl) priceEl.textContent = "Error loading price";
-      }
-    }
-
-    async function refreshPotBalance() {
-      const balanceLabel = document.getElementById("pot-balance-label");
-      if (!potContract || !userAddress) {
-        potBalanceRaw = ethers.BigNumber.from("0");
-        if (balanceLabel) balanceLabel.textContent = "– POT";
-        return;
-      }
-
-      try {
-        const balance = await potContract.balanceOf(userAddress);
-        potBalanceRaw = balance;
-        const text = formatAmount(balance, POT_DECIMALS, 6);
-        if (balanceLabel) balanceLabel.textContent = `${text} POT`;
-      } catch (e) {
-        console.error("Error loading POT balance", e);
-        potBalanceRaw = ethers.BigNumber.from("0");
-        if (balanceLabel) balanceLabel.textContent = "– POT";
-      }
-    }
-
-    function updateEstimate() {
-      const estimateEl = document.getElementById("estimated-receive-text");
-      const amountInput = document.getElementById("amount-input");
-
-      if (!estimateEl) return;
-
-      if (!buybackPriceRaw || !amountInput || !amountInput.value) {
-        estimateEl.textContent = "– USDT";
-        return;
-      }
-
-      try {
-        const amountFloat = parseFloat(amountInput.value);
-        if (!isFinite(amountFloat) || amountFloat <= 0) {
-          estimateEl.textContent = "– USDT";
-          return;
-        }
-
-        const amountRaw = ethers.utils.parseUnits(
-          amountInput.value,
-          POT_DECIMALS
-        );
-        // amountRaw * priceRaw / 1e18
-        const usdtRaw = amountRaw.mul(buybackPriceRaw).div(
-          ethers.BigNumber.from("10").pow(USDT_DECIMALS)
-        );
-
-        const text = formatAmount(usdtRaw, USDT_DECIMALS, 6);
-        estimateEl.textContent = `${text} USDT`;
-      } catch (e) {
-        console.warn("Failed to update estimate", e);
-        estimateEl.textContent = "– USDT";
-      }
-    }
-
-    function updateUiConnectionState() {
-      const isConnected = !!userAddress;
+    function updateWalletUi() {
+      const connected = !!userAddress;
 
       const walletBadgeText = document.getElementById("wallet-badge-text");
       const walletDot = document.getElementById("wallet-dot");
       const walletStatusDot = document.getElementById("wallet-status-dot");
       const walletStatusText = document.getElementById("wallet-status-text");
-      const walletAddressBox = document.getElementById("wallet-address-box");
+      const addrBox = document.getElementById("wallet-address-box");
       const connectBtn = document.getElementById("connect-btn");
       const disconnectBtn = document.getElementById("disconnect-btn");
       const sellBtn = document.getElementById("sell-btn");
 
-      if (walletBadgeText) {
-        walletBadgeText.textContent = isConnected
-          ? "Connected"
-          : "Disconnected";
-      }
+      if (walletBadgeText) walletBadgeText.textContent = connected ? "Connected" : "Disconnected";
+      if (walletStatusText) walletStatusText.textContent = connected ? "Connected" : "Disconnected";
+      if (addrBox) addrBox.textContent = formatAddress(userAddress);
 
-      setStatusDot(walletDot, isConnected);
-      setStatusDot(walletStatusDot, isConnected);
+      setDotOk(walletDot, connected);
+      setDotOk(walletStatusDot, connected);
 
-      if (walletStatusText) {
-        walletStatusText.textContent = isConnected ? "Connected" : "Disconnected";
-      }
+      if (connectBtn) connectBtn.disabled = connected;
+      if (disconnectBtn) disconnectBtn.disabled = !connected;
+      if (sellBtn) sellBtn.disabled = !connected;
 
-      if (walletAddressBox) {
-        walletAddressBox.textContent = formatAddress(userAddress);
-      }
-
-      if (connectBtn) connectBtn.disabled = isConnected;
-      if (disconnectBtn) disconnectBtn.disabled = !isConnected;
-
-      if (sellBtn) sellBtn.disabled = !isConnected;
-
-      if (!isConnected) {
-        setHelper("Connect your wallet to start.");
-      } else {
-        setHelper("Enter the POT amount and confirm the transaction.");
-      }
+      setHelper(
+        connected
+          ? "Enter POT amount and confirm the transaction."
+          : "Connect your wallet to start."
+      );
     }
 
-    async function updateNetworkLabels() {
+    function updateNetworkUi() {
       const networkBadgeText = document.getElementById("network-badge-text");
       const networkDot = document.getElementById("network-dot");
-      const networkStatusText = document.getElementById("network-status-text");
       const networkStatusDot = document.getElementById("network-status-dot");
+      const networkStatusText = document.getElementById("network-status-text");
       const walletChainLabel = document.getElementById("wallet-chain-label");
 
-      const chainIdHex = await getCurrentChainIdHex();
-      const isBsc = chainIdHex === BSC_CHAIN_ID_HEX;
+      let label = "Unknown (–)";
+      let isBsc = false;
 
-      let networkLabel = "Unknown (–)";
-      if (chainIdHex) {
-        const dec = parseInt(chainIdHex, 16);
-        if (isBsc) {
-          networkLabel = `${BSC_CHAIN_NAME} (56)`;
-        } else if (!Number.isNaN(dec)) {
-          networkLabel = `Chain ${dec} (${chainIdHex})`;
+      if (typeof currentChainId === "number") {
+        if (currentChainId === BSC_CHAIN_ID) {
+          label = "BNB Smart Chain (56)";
+          isBsc = true;
         } else {
-          networkLabel = `Unknown (${chainIdHex})`;
+          label = "Chain " + String(currentChainId);
         }
       }
 
-      if (networkBadgeText) {
-        networkBadgeText.textContent = networkLabel;
-      }
-      if (walletChainLabel) {
-        walletChainLabel.textContent = isBsc
-          ? "BNB Smart Chain · BEP-20"
-          : "Unknown";
-      }
+      if (networkBadgeText) networkBadgeText.textContent = label;
+      if (walletChainLabel)
+        walletChainLabel.textContent = isBsc ? "BNB Smart Chain · BEP-20" : "Unknown";
 
-      setStatusDot(networkDot, isBsc);
-      setStatusDot(networkStatusDot, isBsc);
+      setDotOk(networkDot, isBsc);
+      setDotOk(networkStatusDot, isBsc);
+      if (networkStatusText)
+        networkStatusText.textContent = isBsc ? "BNB Smart Chain" : "Wrong / unknown";
 
-      if (networkStatusText) {
-        networkStatusText.textContent = isBsc
-          ? "BNB Smart Chain"
-          : "Wrong / Unknown";
-      }
-
-      if (!chainIdHex) {
-        setError(
-          "Unable to detect network. Please make sure your wallet is unlocked."
-        );
+      if (!currentChainId) {
+        setError("Cannot detect network. Make sure your wallet is unlocked.");
       } else if (!isBsc) {
-        setError(
-          "You are not on BNB Smart Chain (chain 56). Please switch network in your wallet."
-        );
+        setError("Please switch your wallet to BNB Smart Chain (chain 56).");
       } else {
         setError("");
       }
     }
 
-    async function connectWallet() {
-      const eth = getEthereumProvider();
-
-      if (!eth) {
-        setError("No EVM wallet detected. Please use MetaMask or Trust Wallet.");
+    async function refreshPrice() {
+      const el = document.getElementById("buyback-price-text");
+      if (!buybackContract) {
+        if (el) el.textContent = "Price unavailable";
         return;
       }
 
-      setError("");
-      setHelper("Connecting wallet...");
+      try {
+        buybackPriceRaw = await buybackContract.price();
+        const text = formatAmount(buybackPriceRaw, USDT_DECIMALS, 8);
+        if (el) el.textContent = text + " USDT per POT";
+        updateEstimate();
+      } catch (e) {
+        console.error("price() error", e);
+        if (el) el.textContent = "Error loading price";
+      }
+    }
+
+    async function refreshBalance() {
+      const el = document.getElementById("pot-balance-label");
+      if (!potContract || !userAddress) {
+        potBalanceRaw = ethers.BigNumber.from("0");
+        if (el) el.textContent = "– POT";
+        return;
+      }
 
       try {
-        // Some wallets need network switch after connection, so just request accounts first
-        const accounts = await eth.request({
-          method: "eth_requestAccounts"
-        });
-
-        if (!accounts || accounts.length === 0) {
-          setError("No accounts returned from wallet. Please unlock your wallet.");
-          setHelper("Connect your wallet to start.");
-          return;
-        }
-
-        userAddress = ethers.utils.getAddress(accounts[0]);
-
-        provider = new ethers.providers.Web3Provider(eth, "any");
-        signer = provider.getSigner();
-
-        await initContracts();
-        await updateNetworkLabels();
-
-        // If not on BSC, try to switch but do not treat as fatal error for connection itself
-        const onBsc = await ensureBscNetworkInteractive(false);
-        if (!onBsc) {
-          await updateNetworkLabels();
-          setHelper(
-            "Wallet connected. Please switch your wallet network to BNB Smart Chain (56)."
-          );
-        } else {
-          await updateNetworkLabels();
-          setHelper("Wallet connected. Ready to sell POT.");
-        }
-
-        await refreshPotBalance();
-        await refreshBuybackPrice();
-        updateUiConnectionState();
-
-        setError("");
+        potBalanceRaw = await potContract.balanceOf(userAddress);
+        const t = formatAmount(potBalanceRaw, POT_DECIMALS, 6);
+        if (el) el.textContent = t + " POT";
       } catch (e) {
-        console.error("Failed to connect wallet", e);
+        console.error("balanceOf error", e);
+        potBalanceRaw = ethers.BigNumber.from("0");
+        if (el) el.textContent = "– POT";
+      }
+    }
+
+    function updateEstimate() {
+      const estEl = document.getElementById("estimated-receive-text");
+      const input = document.getElementById("amount-input");
+      if (!estEl) return;
+
+      if (!buybackPriceRaw || !input || !input.value) {
+        estEl.textContent = "– USDT";
+        return;
+      }
+
+      try {
+        const raw = ethers.utils.parseUnits(input.value, POT_DECIMALS);
+        const usdtRaw = raw.mul(buybackPriceRaw).div(
+          ethers.BigNumber.from("10").pow(USDT_DECIMALS)
+        );
+        const text = formatAmount(usdtRaw, USDT_DECIMALS, 6);
+        estEl.textContent = text + " USDT";
+      } catch {
+        estEl.textContent = "– USDT";
+      }
+    }
+
+    // ------- MAIN ACTIONS -------
+    async function connectWallet() {
+      if (!window.ethereum) {
+        setError("No EVM wallet detected. Use MetaMask or Trust Wallet DApp browser.");
+        return;
+      }
+
+      try {
+        setError("");
+        setHelper("Connecting wallet...");
+
+        provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+        await provider.send("eth_requestAccounts", []);
+        signer = provider.getSigner();
+        userAddress = await signer.getAddress();
+
+        const network = await provider.getNetwork();
+        currentChainId = network.chainId;
+
+        potContract = new ethers.Contract(POT_TOKEN_ADDRESS, POT_ABI, signer);
+        buybackContract = new ethers.Contract(BUYBACK_CONTRACT_ADDRESS, BUYBACK_ABI, signer);
+
+        updateWalletUi();
+        updateNetworkUi();
+        await refreshBalance();
+        await refreshPrice();
+      } catch (e) {
+        console.error("connect error", e);
         setError("Failed to connect wallet: " + (e.message || "Unknown error"));
         setHelper("Connect your wallet to start.");
-        userAddress = null;
         provider = null;
         signer = null;
-        updateUiConnectionState();
-        await updateNetworkLabels();
+        userAddress = null;
+        currentChainId = null;
+        updateWalletUi();
+        updateNetworkUi();
       }
     }
 
     function disconnectWallet() {
-      userAddress = null;
       provider = null;
       signer = null;
+      userAddress = null;
+      currentChainId = null;
       potContract = null;
       buybackContract = null;
       potBalanceRaw = ethers.BigNumber.from("0");
       buybackPriceRaw = null;
 
-      const balanceLabel = document.getElementById("pot-balance-label");
-      const priceEl = document.getElementById("buyback-price-text");
-      const estimateEl = document.getElementById("estimated-receive-text");
-      const amountInput = document.getElementById("amount-input");
+      const bal = document.getElementById("pot-balance-label");
+      const price = document.getElementById("buyback-price-text");
+      const est = document.getElementById("estimated-receive-text");
+      const input = document.getElementById("amount-input");
 
-      if (balanceLabel) balanceLabel.textContent = "– POT";
-      if (priceEl) priceEl.textContent = "Loading...";
-      if (estimateEl) estimateEl.textContent = "– USDT";
-      if (amountInput) amountInput.value = "";
+      if (bal) bal.textContent = "– POT";
+      if (price) price.textContent = "Loading...";
+      if (est) est.textContent = "– USDT";
+      if (input) input.value = "";
 
-      clearPercentButtons();
-      updateUiConnectionState();
-      updateNetworkLabels();
+      clearPercentBtns();
+      updateWalletUi();
+      updateNetworkUi();
       setError("");
     }
 
@@ -1314,31 +1111,26 @@
       const sellBtn = document.getElementById("sell-btn");
       if (!sellBtn) return;
 
-      setError("");
-
       if (!provider || !signer || !userAddress) {
         setError("Connect your wallet first.");
         return;
       }
 
-      const onBsc = await ensureBscNetworkInteractive(true);
-      await updateNetworkLabels();
-      if (!onBsc) return;
-
-      if (!potContract || !buybackContract) {
-        await initContracts();
+      if (currentChainId !== BSC_CHAIN_ID) {
+        setError("Please switch your wallet to BNB Smart Chain (chain 56) and try again.");
+        return;
       }
 
-      const amountInput = document.getElementById("amount-input");
-      if (!amountInput || !amountInput.value) {
+      const input = document.getElementById("amount-input");
+      if (!input || !input.value) {
         setError("Enter POT amount to sell.");
         return;
       }
 
       let amountRaw;
       try {
-        amountRaw = ethers.utils.parseUnits(amountInput.value, POT_DECIMALS);
-      } catch (e) {
+        amountRaw = ethers.utils.parseUnits(input.value, POT_DECIMALS);
+      } catch {
         setError("Invalid POT amount.");
         return;
       }
@@ -1356,131 +1148,109 @@
       try {
         sellBtn.disabled = true;
         sellBtn.textContent = "Processing...";
+        setError("");
 
-        // 1) Check allowance
         const allowance = await potContract.allowance(
           userAddress,
           BUYBACK_CONTRACT_ADDRESS
         );
 
         if (allowance.lt(amountRaw)) {
-          setHelper("Approval required. Please confirm the approval transaction in your wallet.");
-          const approveTx = await potContract.approve(
+          setHelper("Approval required. Confirm approval in your wallet.");
+          const txApprove = await potContract.approve(
             BUYBACK_CONTRACT_ADDRESS,
             amountRaw
           );
-          await approveTx.wait();
+          await txApprove.wait();
         }
 
-        // 2) Call sellTokens
-        setHelper("Approval done. Please confirm the sell transaction in your wallet.");
-        const sellTx = await buybackContract.sellTokens(amountRaw);
-        await sellTx.wait();
+        setHelper("Now confirm the sell transaction in your wallet.");
+        const txSell = await buybackContract.sellTokens(amountRaw);
+        await txSell.wait();
 
         setHelper("Sell completed successfully.");
         setError("");
-        await refreshPotBalance();
-        await refreshBuybackPrice();
+        await refreshBalance();
+        await refreshPrice();
       } catch (e) {
-        console.error("Sell failed", e);
+        console.error("sell error", e);
         setError("Sell failed. Check wallet and try again.");
-        setHelper("Sell failed or rejected. You can try again.");
+        setHelper("Transaction failed or rejected. You can try again.");
       } finally {
         sellBtn.disabled = !userAddress;
         sellBtn.textContent = "Sell POT for USDT";
       }
     }
 
-    function initEventListeners() {
+    // ------- EVENTS & INIT -------
+    function initEvents() {
       const connectBtn = document.getElementById("connect-btn");
       const disconnectBtn = document.getElementById("disconnect-btn");
       const sellBtn = document.getElementById("sell-btn");
-      const amountInput = document.getElementById("amount-input");
+      const input = document.getElementById("amount-input");
 
-      if (connectBtn) {
-        connectBtn.addEventListener("click", () => {
-          connectWallet();
-        });
-      }
-
-      if (disconnectBtn) {
-        disconnectBtn.addEventListener("click", () => {
-          disconnectWallet();
-        });
-      }
-
-      if (sellBtn) {
-        sellBtn.addEventListener("click", () => {
-          handleSell();
-        });
-      }
-
-      if (amountInput) {
-        amountInput.addEventListener("input", () => {
-          clearPercentButtons();
-          updateEstimate();
-        });
-      }
+      if (connectBtn) connectBtn.onclick = connectWallet;
+      if (disconnectBtn) disconnectBtn.onclick = disconnectWallet;
+      if (sellBtn) sellBtn.onclick = handleSell;
+      if (input) input.addEventListener("input", () => {
+        clearPercentBtns();
+        updateEstimate();
+      });
 
       document.querySelectorAll(".percent-btn").forEach((btn) => {
         btn.addEventListener("click", () => {
           if (!potBalanceRaw) return;
+          const p = Number(btn.getAttribute("data-percent") || "0");
+          if (!isFinite(p) || p <= 0) return;
 
-          const percent = Number(btn.getAttribute("data-percent"));
-          if (!isFinite(percent) || percent <= 0) return;
-
-          clearPercentButtons();
+          clearPercentBtns();
           btn.classList.add("active");
 
-          const ratio = ethers.BigNumber.from(percent).mul(ethers.BigNumber.from("100")).div(100);
-          // Simple BigNumber percent: amount = balance * percent / 100
-          const amount = potBalanceRaw.mul(percent).div(100);
-
-          const amountInputEl = document.getElementById("amount-input");
-          if (amountInputEl) {
-            const text = formatAmount(amount, POT_DECIMALS, 6);
-            amountInputEl.value = text;
-          }
-
+          const amount = potBalanceRaw.mul(p).div(100);
+          const t = formatAmount(amount, POT_DECIMALS, 6);
+          if (input) input.value = t;
           updateEstimate();
         });
       });
 
-      const eth = getEthereumProvider();
-      if (eth && eth.on) {
-        // Account changed
-        eth.on("accountsChanged", async (accounts) => {
+      if (window.ethereum && window.ethereum.on) {
+        window.ethereum.on("accountsChanged", async (accounts) => {
           if (!accounts || accounts.length === 0) {
             disconnectWallet();
             return;
           }
-          userAddress = ethers.utils.getAddress(accounts[0]);
-          provider = new ethers.providers.Web3Provider(eth, "any");
+          if (!provider) {
+            provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+          }
           signer = provider.getSigner();
-          await initContracts();
-          updateUiConnectionState();
-          await updateNetworkLabels();
-          await refreshPotBalance();
-          await refreshBuybackPrice();
+          userAddress = ethers.utils.getAddress(accounts[0]);
+          const network = await provider.getNetwork();
+          currentChainId = network.chainId;
+          potContract = new ethers.Contract(POT_TOKEN_ADDRESS, POT_ABI, signer);
+          buybackContract = new ethers.Contract(BUYBACK_CONTRACT_ADDRESS, BUYBACK_ABI, signer);
+
+          updateWalletUi();
+          updateNetworkUi();
+          await refreshBalance();
+          await refreshPrice();
         });
 
-        // Chain changed
-        eth.on("chainChanged", async (chainId) => {
-          console.log("chainChanged", chainId);
-          await updateNetworkLabels();
-          await refreshBuybackPrice();
+        window.ethereum.on("chainChanged", async () => {
+          if (!provider) {
+            provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+          }
+          const network = await provider.getNetwork();
+          currentChainId = network.chainId;
+          updateNetworkUi();
+          await refreshPrice();
         });
       }
     }
 
-    async function bootstrap() {
-      updateUiConnectionState();
-      await updateNetworkLabels();
-      initEventListeners();
-    }
-
     document.addEventListener("DOMContentLoaded", () => {
-      bootstrap();
+      updateWalletUi();
+      updateNetworkUi();
+      initEvents();
     });
   </script>
 </body>
