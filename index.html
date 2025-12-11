@@ -48,8 +48,9 @@
       content: "";
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle at -10% -20%, rgba(255, 211, 77, 0.1), transparent 55%),
-                  radial-gradient(circle at 120% 120%, rgba(0, 194, 255, 0.12), transparent 55%);
+      background:
+        radial-gradient(circle at -10% -20%, rgba(255, 211, 77, 0.1), transparent 55%),
+        radial-gradient(circle at 120% 120%, rgba(0, 194, 255, 0.12), transparent 55%);
       pointer-events: none;
       opacity: 0.9;
     }
@@ -317,7 +318,7 @@
       transform: translateY(0);
       box-shadow:
         0 6px 16px rgba(0, 0, 0, 0.7),
-        0 0 0 1px rgba(255, 255, 255, 0.04);
+        0 0 0 1pxrgba(255, 255, 255, 0.04);
     }
 
     .btn:disabled {
@@ -381,7 +382,7 @@
 
     .percent-btn:active {
       transform: translateY(0);
-      box-shadow: 0 4px 10pxrgba(0, 0, 0, 0.7);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
     }
 
     .input-group {
@@ -844,6 +845,7 @@
 
   <script>
     const BSC_CHAIN_ID = 56;
+    const BSC_CHAIN_ID_HEX = "0x38";
 
     const POT_TOKEN_ADDRESS = "0x66059443da552aAe6a032E3a84307E6BBbd3cd01";
     const BUYBACK_CONTRACT_ADDRESS = "0x9652CC7355C759DB295E8bd5A21d4D707FC07085";
@@ -1090,6 +1092,46 @@
 
         await refreshChainFromWallet();
 
+        // Auto switch only for MetaMask
+        if (window.ethereum.isMetaMask && currentChainIdNum !== BSC_CHAIN_ID) {
+          try {
+            await window.ethereum.request({
+              method: "wallet_switchEthereumChain",
+              params: [{ chainId: BSC_CHAIN_ID_HEX }]
+            });
+
+            await refreshChainFromWallet();
+          } catch (switchError) {
+            console.warn("wallet_switchEthereumChain failed", switchError);
+
+            if (switchError && switchError.code === 4902) {
+              try {
+                await window.ethereum.request({
+                  method: "wallet_addEthereumChain",
+                  params: [
+                    {
+                      chainId: BSC_CHAIN_ID_HEX,
+                      chainName: "BNB Smart Chain",
+                      nativeCurrency: {
+                        name: "BNB",
+                        symbol: "BNB",
+                        decimals: 18
+                      },
+                      rpcUrls: ["https://bsc-dataseed.binance.org"],
+                      blockExplorerUrls: ["https://bscscan.com"]
+                    }
+                  ]
+                ];
+                await refreshChainFromWallet();
+              } catch (addError) {
+                console.warn("wallet_addEthereumChain failed", addError);
+              }
+            }
+
+            setHelper("Wallet connected. Please switch network to BNB Smart Chain (56) inside MetaMask.");
+          }
+        }
+
         potContract = new ethers.Contract(POT_TOKEN_ADDRESS, POT_ABI, signer);
         buybackContract = new ethers.Contract(BUYBACK_CONTRACT_ADDRESS, BUYBACK_ABI, signer);
 
@@ -1277,4 +1319,4 @@
     });
   </script>
 </body>
-</html>
+  </html>
