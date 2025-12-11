@@ -744,13 +744,6 @@
             <button id="connect-btn" class="btn btn-primary">Connect Wallet</button>
             <button id="disconnect-btn" class="btn btn-secondary" disabled>Disconnect</button>
           </div>
-
-          <!-- New row: Switch to BSC (full width) -->
-          <div class="wallet-buttons">
-            <button id="switch-bsc-btn" class="btn btn-secondary">
-              Switch to BSC (MetaMask)
-            </button>
-          </div>
         </section>
 
         <section class="section">
@@ -852,7 +845,6 @@
 
   <script>
     const BSC_CHAIN_ID = 56;
-    const BSC_CHAIN_ID_HEX = "0x38";
 
     const POT_TOKEN_ADDRESS = "0x66059443da552aAe6a032E3a84307E6BBbd3cd01";
     const BUYBACK_CONTRACT_ADDRESS = "0x9652CC7355C759DB295E8bd5A21d4D707FC07085";
@@ -1187,87 +1179,15 @@
       }
     }
 
-    async function switchToBsc() {
-      if (!window.ethereum) {
-        setError("No EVM wallet detected.");
-        return;
-      }
-
-      if (!window.ethereum.isMetaMask) {
-        setError("Switch to BSC works only in MetaMask. In other wallets, change network manually.");
-        return;
-      }
-
-      if (!provider || !signer || !userAddress) {
-        setError("Connect your wallet first.");
-        return;
-      }
-
-      try {
-        setError("");
-        setHelper("Switching network to BNB Smart Chain (56)...");
-
-        await window.ethereum.request({
-          method: "wallet_switchEthereumChain",
-          params: [{ chainId: BSC_CHAIN_ID_HEX }]
-        });
-
-        const network = await provider.getNetwork();
-        currentChainId = network.chainId;
-        updateNetworkUi();
-        await refreshPrice();
-        setHelper("Network switched to BNB Smart Chain (56).");
-      } catch (e) {
-        console.error("switchToBsc error", e);
-
-        if (e && e.code === 4902) {
-          // Chain not added
-          try {
-            await window.ethereum.request({
-              method: "wallet_addEthereumChain",
-              params: [
-                {
-                  chainId: BSC_CHAIN_ID_HEX,
-                  chainName: "BNB Smart Chain",
-                  nativeCurrency: {
-                    name: "BNB",
-                    symbol: "BNB",
-                    decimals: 18
-                  },
-                  rpcUrls: ["https://bsc-dataseed.binance.org"],
-                  blockExplorerUrls: ["https://bscscan.com"]
-                }
-              ]
-            ];
-            const network = await provider.getNetwork();
-            currentChainId = network.chainId;
-            updateNetworkUi();
-            await refreshPrice();
-            setHelper("BNB Smart Chain added and selected in MetaMask.");
-          } catch (addErr) {
-            console.error("add chain error", addErr);
-            setError("Failed to add BNB Smart Chain. Please add it manually in MetaMask.");
-          }
-        } else if (e && e.code === 4001) {
-          setError("Network switch rejected in MetaMask.");
-        } else {
-          setError("Failed to switch network. Please change it manually to BSC.");
-        }
-      }
-    }
-
     function initEvents() {
       const connectBtn = document.getElementById("connect-btn");
       const disconnectBtn = document.getElementById("disconnect-btn");
       const sellBtn = document.getElementById("sell-btn");
       const input = document.getElementById("amount-input");
-      const switchBtn = document.getElementById("switch-bsc-btn");
 
       if (connectBtn) connectBtn.onclick = connectWallet;
       if (disconnectBtn) disconnectBtn.onclick = disconnectWallet;
       if (sellBtn) sellBtn.onclick = handleSell;
-      if (switchBtn) switchBtn.onclick = switchToBsc;
-
       if (input) input.addEventListener("input", () => {
         clearPercentBtns();
         updateEstimate();
