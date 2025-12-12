@@ -20,10 +20,10 @@
       --bg: #050816;
       --bg-card: #0b1020;
       --bg-card-soft: #11172a;
-      --accent: #00ff88;
-      --accent-soft: rgba(0, 255, 136, 0.15);
+      --accent: #22c55e;
+      --accent-soft: rgba(34, 197, 94, 0.18);
       --accent-yellow: #ffb545;
-      --danger: #ff4b5c;
+      --danger: #fb7185;
       --text-main: #f5f7ff;
       --text-soft: #a6b0cf;
       --border-soft: #1b2438;
@@ -142,34 +142,6 @@
       font-weight: 700;
       letter-spacing: 0.03em;
       text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
-    }
-
-    .badge-organization {
-      padding: 5px 11px 6px;
-      border-radius: 999px;
-      font-size: 11px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      border: 1px solid rgba(148, 163, 184, 0.4);
-      color: #bfdbfe;
-      background: linear-gradient(
-        135deg,
-        rgba(37, 99, 235, 0.85),
-        rgba(56, 189, 248, 0.85)
-      );
-      box-shadow: 0 10px 25px rgba(37, 99, 235, 0.7);
-      white-space: nowrap;
-    }
-
-    .subtitle {
-      font-size: 12px;
-      color: var(--text-soft);
-      line-height: 1.4;
-    }
-
-    .subtitle strong {
-      color: #f9fafb;
-      font-weight: 600;
     }
 
     .quick-tags {
@@ -546,7 +518,7 @@
 
     .dual-status-row {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1, 1fr));
       gap: 8px;
       margin-top: 9px;
     }
@@ -627,85 +599,112 @@
     }
 
     .inline-warning {
-      margin-top: 6px;
+      margin-top: 4px;
       font-size: 11px;
       text-align: center;
-      color: #fb7185;
+      color: #9ca3af;
+      min-height: 13px;
     }
 
-    .how-it-works {
-      margin-top: 14px;
-      border-radius: 22px;
-      padding: 10px 12px 11px;
+    .error-text {
+      margin-top: 4px;
+      font-size: 11px;
+      text-align: center;
+      color: var(--danger);
+      min-height: 13px;
+    }
+
+    .info-card {
+      margin-top: 10px;
+      border-radius: 18px;
+      padding: 8px 10px 9px;
       background: radial-gradient(circle at top, #020617, #020617);
       border: 1px solid rgba(31, 41, 55, 0.95);
       font-size: 11px;
       color: #9ca3af;
     }
 
-    .how-title {
+    .info-card-title {
       font-size: 11px;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.16em;
       color: #e5e7eb;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
 
-    .how-list {
-      padding-left: 16px;
-      margin: 0;
-    }
-
-    .how-list li {
-      margin-bottom: 3px;
+    .info-card p {
+      margin: 0 0 2px;
       line-height: 1.5;
     }
 
-    .how-list strong {
-      color: #e5e7eb;
-    }
-
-    .safety {
-      margin-top: 8px;
+    .history-card {
+      margin-top: 10px;
       border-radius: 18px;
       padding: 8px 10px 9px;
-      background: radial-gradient(circle at bottom, #020617, #020617);
-      border: 1px dashed rgba(55, 65, 81, 0.9);
-      font-size: 10px;
+      background: radial-gradient(circle at top, #020617, #020617);
+      border: 1px solid rgba(31, 41, 55, 0.95);
+      font-size: 11px;
       color: #9ca3af;
     }
 
-    .safety-title {
+    .history-title {
+      font-size: 11px;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.16em;
-      font-size: 9px;
+      color: #e5e7eb;
       margin-bottom: 4px;
-      color: #e5e7eb;
     }
 
-    .safety-line {
-      margin-bottom: 3px;
-      word-break: break-all;
-    }
-
-    .safety-label {
-      color: #6b7280;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      font-size: 9px;
-    }
-
-    .safety-value {
-      color: #e5e7eb;
-    }
-
-    .help-text {
-      margin-top: 6px;
+    .history-empty {
       font-size: 10px;
       color: #6b7280;
-      text-align: center;
+    }
+
+    .history-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .history-item {
+      display: flex;
+      flex-direction: column;
+      padding: 4px 0;
+      border-top: 1px solid rgba(31, 41, 55, 0.8);
+    }
+
+    .history-item:first-child {
+      border-top: none;
+    }
+
+    .history-main {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+      font-size: 11px;
+      color: #e5e7eb;
+    }
+
+    .history-sub {
+      font-size: 10px;
+      color: #6b7280;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 2px;
+    }
+
+    .history-link {
+      color: #93c5fd;
+      text-decoration: none;
+      font-size: 10px;
+    }
+
+    .history-link:hover {
+      text-decoration: underline;
     }
 
     @media (max-width: 480px) {
@@ -732,21 +731,12 @@
         gap: 5px;
       }
 
-      .badge-organization {
-        font-size: 10px;
-        padding-inline: 9px;
-      }
-
       .quick-tag {
         font-size: 9px;
       }
 
       .card {
         padding-inline: 12px;
-      }
-
-      .how-it-works {
-        padding-inline: 10px;
       }
     }
   </style>
@@ -766,7 +756,7 @@
           </div>
           <div class="quick-tags">
             <div class="quick-tag">Playtopia Organization Token</div>
-            <div class="quick-tag secondary">Payout token: BEP-20 USDT</div>
+            <div class="quick-tag secondary">Payout: BEP-20 USDT</div>
           </div>
         </div>
       </header>
@@ -854,7 +844,7 @@
             <div class="info-box">
               <div class="info-label">Buyback price</div>
               <div class="info-value-main" id="price-display">Loading...</div>
-              <div class="info-sub">Price from buyback contract</div>
+              <div class="info-sub">Read from buyback contract</div>
             </div>
             <div class="info-box">
               <div class="info-label">Estimated receive</div>
@@ -887,45 +877,25 @@
             <div class="inline-warning" id="inline-warning">
               Connect your wallet to start.
             </div>
+            <div class="error-text" id="error-text"></div>
           </div>
         </div>
       </section>
 
-      <section class="how-it-works">
-        <div class="how-title">How it works</div>
-        <ol class="how-list">
-          <li>
-            Connect your wallet on <strong>BNB Smart Chain (chain 56)</strong>.
-          </li>
-          <li>
-            Enter the amount of <strong>POT</strong> or use quick percentage buttons.
-          </li>
-          <li>
-            Confirm <strong>approval</strong> on the POT token (first time), then confirm
-            the <strong>sell</strong> transaction.
-          </li>
-          <li>
-            You will receive <strong>BEP-20 USDT</strong> from the buyback contract
-            liquidity, directly into your wallet.
-          </li>
-        </ol>
+      <div class="info-card">
+        <div class="info-card-title">How this portal works</div>
+        <p>• You sell POT from your wallet.</p>
+        <p>• The buyback contract sends BEP-20 USDT to your wallet.</p>
+        <p style="margin-top:4px;">This interface only calls the official POT buyback contracts; it never holds funds.</p>
+      </div>
 
-        <div class="safety">
-          <div class="safety-title">Safety checks</div>
-          <div class="safety-line">
-            <span class="safety-label">Buyback contract:</span>
-            <span class="safety-value">0x9652CC7355C759DB295E8bd5A21d4D707FC07085</span>
-          </div>
-          <div class="safety-line">
-            <span class="safety-label">POT token:</span>
-            <span class="safety-value">0x66059443da552aAe6a032E3a84307E6BBbd3cd01</span>
-          </div>
-          <div class="help-text">
-            This interface only interacts with the contracts above; it does not hold your
-            funds.
-          </div>
+      <div class="history-card">
+        <div class="history-title">Last sales on this device</div>
+        <div id="history-empty" class="history-empty">
+          No sales recorded yet.
         </div>
-      </section>
+        <ul id="history-list" class="history-list"></ul>
+      </div>
     </div>
   </div>
 
@@ -947,6 +917,9 @@
       "function price() view returns (uint256)",
       "function sellTokens(uint256 amount) returns (bool)"
     ];
+
+    const HISTORY_KEY = "pot_buyback_history_v1";
+    const MAX_HISTORY = 5;
 
     // ---- State ----
     let provider = null;
@@ -985,6 +958,9 @@
     const estimatedDisplay = document.getElementById("estimated-display");
     const sellButton = document.getElementById("sell-button");
     const inlineWarning = document.getElementById("inline-warning");
+    const errorText = document.getElementById("error-text");
+    const historyListEl = document.getElementById("history-list");
+    const historyEmptyEl = document.getElementById("history-empty");
 
     // ---- Helpers ----
     function normalizeChainId(chainId) {
@@ -1003,6 +979,16 @@
     function shortenAddress(addr) {
       if (!addr) return "";
       return addr.slice(0, 6) + "..." + addr.slice(-4);
+    }
+
+    function setError(msg) {
+      if (!errorText) return;
+      errorText.textContent = msg || "";
+    }
+
+    function setHelper(msg) {
+      if (!inlineWarning) return;
+      inlineWarning.textContent = msg || "";
     }
 
     function setWalletConnectedUI(connected) {
@@ -1056,6 +1042,14 @@
       networkStatusPill.style.borderColor = onBsc
         ? "rgba(34,197,94,0.65)"
         : "rgba(248,113,113,0.65)";
+
+      if (!onBsc && currentAccount) {
+        setError("Wrong network. Please switch your wallet to BNB Smart Chain (56).");
+      } else if (!currentAccount) {
+        setError("");
+      } else {
+        setError("");
+      }
     }
 
     function setSellButtonState() {
@@ -1065,26 +1059,24 @@
 
       if (!connected) {
         sellButton.classList.add("disabled");
-        inlineWarning.textContent = "Connect your wallet to start.";
+        setHelper("Connect your wallet to start.");
         return;
       }
 
       if (!onBsc) {
         sellButton.classList.add("disabled");
-        inlineWarning.textContent =
-          "You are not on BNB Smart Chain (56). Please switch network in your wallet.";
+        setHelper("Switch your wallet to BNB Smart Chain (56).");
         return;
       }
 
       if (!hasAmount) {
         sellButton.classList.add("disabled");
-        inlineWarning.textContent = "Enter the amount of POT to sell.";
+        setHelper("Enter the amount of POT to sell.");
         return;
       }
 
       sellButton.classList.remove("disabled");
-      inlineWarning.textContent =
-        "Enter POT amount and confirm the transaction.";
+      setHelper("Review the amount and confirm the transaction in your wallet.");
     }
 
     function clearPercentSelection() {
@@ -1100,6 +1092,98 @@
       });
     }
 
+    // ---- History ----
+    function loadHistory() {
+      try {
+        const raw = localStorage.getItem(HISTORY_KEY);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return [];
+        return parsed;
+      } catch {
+        return [];
+      }
+    }
+
+    function saveHistory(list) {
+      try {
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(list));
+      } catch {
+        // ignore
+      }
+    }
+
+    function addHistoryItem(item) {
+      const current = loadHistory();
+      current.unshift(item);
+      if (current.length > MAX_HISTORY) {
+        current.length = MAX_HISTORY;
+      }
+      saveHistory(current);
+      renderHistory();
+    }
+
+    function renderHistory() {
+      const list = loadHistory();
+      if (!list || list.length === 0) {
+        historyEmptyEl.style.display = "block";
+        historyListEl.innerHTML = "";
+        return;
+      }
+      historyEmptyEl.style.display = "none";
+      historyListEl.innerHTML = "";
+
+      list.forEach((h) => {
+        const li = document.createElement("li");
+        li.className = "history-item";
+
+        const main = document.createElement("div");
+        main.className = "history-main";
+        main.innerHTML = `
+          <span>${formatNumber(h.pot, 4)} POT</span>
+          <span>${formatNumber(h.usdt, 4)} USDT</span>
+        `;
+
+        const sub = document.createElement("div");
+        sub.className = "history-sub";
+
+        const left = document.createElement("span");
+        left.textContent = h.timeLabel || "";
+
+        const right = document.createElement("span");
+        if (h.txHash) {
+          const link = document.createElement("a");
+          link.href = "https://bscscan.com/tx/" + h.txHash;
+          link.target = "_blank";
+          link.rel = "noopener noreferrer";
+          link.textContent = "View tx";
+          link.className = "history-link";
+          right.appendChild(link);
+        } else {
+          right.textContent = "";
+        }
+
+        sub.appendChild(left);
+        sub.appendChild(right);
+        li.appendChild(main);
+        li.appendChild(sub);
+        historyListEl.appendChild(li);
+      });
+    }
+
+    function nowLabel() {
+      try {
+        const d = new Date();
+        const hh = d.getHours().toString().padStart(2, "0");
+        const mm = d.getMinutes().toString().padStart(2, "0");
+        return `${d.getFullYear()}-${(d.getMonth() + 1)
+          .toString()
+          .padStart(2, "0")}-${d.getDate().toString().padStart(2, "0")} ${hh}:${mm}`;
+      } catch {
+        return "";
+      }
+    }
+
     // ---- Blockchain calls ----
     async function initProviderIfNeeded() {
       if (!window.ethereum) {
@@ -1113,17 +1197,20 @@
 
     async function connectWallet() {
       try {
+        setError("");
+        setHelper("Connecting wallet...");
         const p = await initProviderIfNeeded();
         if (!p) {
-          alert(
-            "No Web3 wallet detected. Please install MetaMask, Trust Wallet, or another Web3 wallet."
+          setHelper("");
+          setError(
+            "No Web3 wallet detected. Install MetaMask, Trust Wallet, or open in a Web3 browser."
           );
           return;
         }
 
         const accounts = await p.send("eth_requestAccounts", []);
         if (!accounts || accounts.length === 0) {
-          throw new Error("No accounts returned");
+          throw new Error("No accounts returned from wallet.");
         }
 
         provider = p;
@@ -1142,6 +1229,12 @@
         await refreshBalances();
         await loadBuybackPrice();
         updateEstimate();
+
+        if (!isOnBsc()) {
+          setHelper("Wallet connected. Please switch to BNB Smart Chain (56).");
+        } else {
+          setHelper("Wallet connected. You can enter POT amount to sell.");
+        }
       } catch (err) {
         console.error("Failed to connect wallet", err);
         currentAccount = null;
@@ -1151,15 +1244,14 @@
         setWalletConnectedUI(false);
         setNetworkStatusUI();
         setSellButtonState();
-        inlineWarning.textContent =
-          "Failed to connect wallet. Please try again.";
+        setHelper("Connect your wallet to start.");
+        setError("Failed to connect wallet. Check your wallet app and try again.");
       }
     }
 
     async function disconnectWallet() {
       currentAccount = null;
       signer = null;
-      // Provider stays, but account is cleared
       walletAddressEl.textContent = "Address not connected";
       tokenBalanceEl.textContent = "–";
       priceDisplay.textContent = "Loading...";
@@ -1170,7 +1262,8 @@
       setWalletConnectedUI(false);
       setNetworkStatusUI();
       setSellButtonState();
-      inlineWarning.textContent = "Connect your wallet to start.";
+      setHelper("Connect your wallet to start.");
+      setError("");
     }
 
     async function ensureTokenMetadata() {
@@ -1200,6 +1293,7 @@
       } catch (err) {
         console.error("Failed to load POT balance", err);
         tokenBalanceEl.textContent = "–";
+        setError("Failed to read POT balance from contract.");
       }
     }
 
@@ -1224,12 +1318,14 @@
         console.error("Failed to load price", err);
         buybackPriceRaw = null;
         priceDisplay.textContent = "Error loading price";
+        setError("Could not read buyback price from contract.");
       }
     }
 
     function updateEstimate() {
       if (!buybackPriceRaw) {
         estimatedDisplay.textContent = "– USDT";
+        setSellButtonState();
         return;
       }
       const value = amountInput.value;
@@ -1261,13 +1357,26 @@
       const onBsc = isOnBsc();
       const value = amountInput.value;
 
-      if (!connected || !onBsc || !value || Number(value) <= 0) {
+      if (!connected) {
+        setError("Wallet not connected.");
+        setHelper("Connect your wallet first.");
+        return;
+      }
+      if (!onBsc) {
+        setError("Wrong network. Switch to BNB Smart Chain (56).");
+        setHelper("Change network inside your wallet app.");
+        return;
+      }
+      if (!value || Number(value) <= 0) {
+        setError("Invalid POT amount.");
+        setHelper("Enter a positive amount of POT to sell.");
         return;
       }
 
       try {
+        setError("");
+        setHelper("Preparing transaction...");
         sellButton.classList.add("disabled");
-        inlineWarning.textContent = "Preparing transaction...";
 
         const p = await initProviderIfNeeded();
         if (!p) {
@@ -1286,29 +1395,52 @@
 
         const amountWei = ethers.utils.parseUnits(value, potDecimals);
 
-        inlineWarning.textContent =
-          "Approve POT spending in your wallet (first time).";
+        setHelper("Approve POT spending in your wallet (first time).");
         const txApprove = await pot.approve(
           BUYBACK_CONTRACT_ADDRESS,
           amountWei
         );
         await txApprove.wait();
 
-        inlineWarning.textContent =
-          "Approve the sell transaction in your wallet.";
+        setHelper("Approve the sell transaction in your wallet.");
         const txSell = await buyback.sellTokens(amountWei);
-        await txSell.wait();
+        const receipt = await txSell.wait();
 
-        inlineWarning.textContent =
-          "Sell completed. Balance will refresh shortly.";
+        setHelper("Sell completed. Balance will refresh shortly.");
+        setError("");
         await refreshBalances();
         clearPercentSelection();
+
+        // Create history item
+        let potFloat = Number(value);
+        let usdtFloat = 0;
+        if (buybackPriceRaw) {
+          try {
+            const amountWei2 = ethers.utils.parseUnits(value, potDecimals);
+            const product2 = amountWei2
+              .mul(buybackPriceRaw)
+              .div(ethers.BigNumber.from("10").pow(18));
+            usdtFloat = Number(
+              ethers.utils.formatUnits(product2, 18)
+            );
+          } catch {
+            usdtFloat = 0;
+          }
+        }
+
+        addHistoryItem({
+          pot: potFloat,
+          usdt: usdtFloat,
+          txHash: receipt.transactionHash,
+          timeLabel: nowLabel()
+        });
+
         amountInput.value = "";
         updateEstimate();
       } catch (err) {
         console.error("Sell failed", err);
-        inlineWarning.textContent =
-          "Sell failed. Check wallet messages and try again.";
+        setError("Sell failed. Check wallet messages and try again.");
+        setHelper("Transaction was rejected or failed. You can try again.");
       } finally {
         setSellButtonState();
       }
@@ -1326,16 +1458,16 @@
     percentButtons.forEach((btn) => {
       btn.addEventListener("click", () => {
         if (!currentAccount) {
-          inlineWarning.textContent =
-            "Connect your wallet before using quick percentages.";
+          setError("Wallet not connected.");
+          setHelper("Connect your wallet before using quick percentages.");
           return;
         }
         const percent = Number(btn.dataset.percent || "0");
         const balanceText = tokenBalanceEl.textContent.replace(/,/g, "");
         const balance = Number(balanceText);
         if (!isFinite(balance) || balance <= 0) {
-          inlineWarning.textContent =
-            "Could not read balance. Try again after wallet is connected.";
+          setError("Could not read POT balance.");
+          setHelper("Make sure your wallet is connected and try again.");
           return;
         }
         const amount = (balance * percent) / 100;
@@ -1348,6 +1480,7 @@
 
     amountInput.addEventListener("input", () => {
       clearPercentSelection();
+      setError("");
       updateEstimate();
     });
 
@@ -1366,6 +1499,7 @@
       walletAddressEl.textContent = shortenAddress(currentAccount);
       setWalletConnectedUI(true);
       setSellButtonState();
+      setError("");
       await refreshBalances();
     }
 
@@ -1373,15 +1507,20 @@
       currentChainIdHex = normalizeChainId(chainId);
       setNetworkStatusUI();
       setSellButtonState();
+      setError("");
       await loadBuybackPrice();
       await refreshBalances();
       updateEstimate();
     }
 
     async function bootstrap() {
+      renderHistory();
+
       if (!window.ethereum) {
-        inlineWarning.textContent =
-          "No Web3 wallet detected. Open this page inside MetaMask, Trust Wallet, or another Web3 browser.";
+        setHelper("Connect your wallet to start.");
+        setError(
+          "No Web3 wallet detected. Open this page inside MetaMask, Trust Wallet, or another Web3 browser."
+        );
         setWalletConnectedUI(false);
         setNetworkStatusUI();
         return;
@@ -1409,8 +1548,17 @@
         await loadBuybackPrice();
         await refreshBalances();
         updateEstimate();
+
+        if (!currentAccount) {
+          setHelper("Connect your wallet to start.");
+        } else if (!isOnBsc()) {
+          setHelper("Wallet connected. Please switch to BNB Smart Chain (56).");
+        } else {
+          setHelper("Wallet connected. You can enter POT amount to sell.");
+        }
       } catch (err) {
         console.error("Bootstrap error", err);
+        setError("Failed to initialize provider. Reload the page and try again.");
       }
 
       if (window.ethereum && window.ethereum.on) {
@@ -1422,4 +1570,4 @@
     bootstrap();
   </script>
 </body>
-  </html>
+</html>
